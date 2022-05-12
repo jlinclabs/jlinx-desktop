@@ -1,0 +1,19 @@
+{
+  "name": "jlinx-desktop",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.cjs",
+  "scripts": {
+    "start": "electron ."
+  },
+  "keywords": [
+    "hypercore",
+    "did"
+  ],
+  "author": "Jared Grippe",
+  "license": "MIT",
+  "dependencies": {
+    "electron": "^18.2.3"
+  }
+}
