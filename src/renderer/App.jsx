@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { MemoryRouter as Router, Routes, Route } from 'react-router-dom'
+import { MemoryRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import CssBaseline from '@mui/material/CssBaseline'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import Container from '@mui/material/Container'
@@ -12,11 +12,9 @@ import Spinner from './Spinner'
 import TopNav from './TopNav'
 import BottomNav from './BottomNav'
 
-import MainPage from './MainPage'
 import IdsPage from './IdsPage'
 import KeysPage from './KeysPage'
 import SettingsPage from './SettingsPage'
-
 
 const darkTheme = createTheme({
   palette: {
@@ -73,7 +71,7 @@ function Loaded(){
       <TopNav />
       <Paper sx={{ p: 1, flexGrow: 1 }} elevation={1}>
         <Routes>
-          <Route path="/" element={<MainPage />} />
+          <Route path="/" element={<Navigate replace to="/ids" />} />
           <Route path="/ids" element={<IdsPage />} />
           <Route path="/keys" element={<KeysPage />} />
           <Route path="/settings" element={<SettingsPage />} />
