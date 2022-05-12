@@ -15,7 +15,7 @@ export default function BottomNav(props) {
     [navigate]
   )
   return <BottomNavigation {...{
-    value: location.pathname,
+    value: location.pathname.slice(1),
     onChange
   }}>
     <BottomNavigationAction
