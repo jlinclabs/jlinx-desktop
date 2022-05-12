@@ -54,10 +54,10 @@ export default class MenuBuilder {
 
   buildDarwinTemplate(): MenuItemConstructorOptions[] {
     const subMenuAbout: DarwinMenuItemConstructorOptions = {
-      label: 'Electron',
+      label: 'Jlinx',
       submenu: [
         {
-          label: 'About ElectronReact',
+          label: 'About Jlinx',
           selector: 'orderFrontStandardAboutPanel:',
         },
         { type: 'separator' },
