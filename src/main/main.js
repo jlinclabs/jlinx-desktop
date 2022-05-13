@@ -10,10 +10,12 @@
  */
 const path = require('path')
 const { app, BrowserWindow, shell, ipcMain } = require('electron')
+
 const { autoUpdater } = require('electron-updater')
 const log = require('electron-log')
 const MenuBuilder = require('./menu.js')
 const { resolveHtmlPath } = require('./util.js')
+require('./jlinx.js')
 
 class AppUpdater {
   constructor() {
@@ -26,7 +28,6 @@ class AppUpdater {
 module.exports = AppUpdater
 
 let mainWindow
-let jlinx
 
 ipcMain.on('ipc-example', async (event, arg) => {
   const msgTemplate = (pingPong) => `IPC test: ${pingPong}`
@@ -128,20 +129,10 @@ app.on('window-all-closed', () => {
   }
 })
 
-app.on('quit', () => {
-  if (jlinx) jlinx.destroy()
-})
 
 app
   .whenReady()
   .then(async () => {
-    const { default: JlinxApp } = await import('jlinx-app')
-
-    jlinx = new JlinxApp({
-      storagePath: path.join(app.getPath('userData'), 'jlinx'),
-    })
-    console.log({ jlinx })
-
     createMainWindow()
     app.on('activate', () => {
       // On macOS it's common to re-create a window in the app when the

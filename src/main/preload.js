@@ -1,19 +1,12 @@
-import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron'
+import { contextBridge, ipcRenderer, IpcRendererEvent, shell } from 'electron'
 
 contextBridge.exposeInMainWorld('electron', {
   ipcRenderer: {
-    sendMessage(channel, args) {
-      ipcRenderer.send(channel, args)
-    },
-    on(channel, func) {
-      const subscription = (_event, ...args) =>
-        func(...args)
-      ipcRenderer.on(channel, subscription)
-
-      return () => ipcRenderer.removeListener(channel, subscription)
-    },
-    once(channel, func) {
-      ipcRenderer.once(channel, (_event, ...args) => func(...args))
-    },
+    invoke: (...args) => ipcRenderer.invoke(...args),
+  },
+  shell: {
+    openExternal(url){
+      return shell.openExternal(url)
+    }
   },
 })

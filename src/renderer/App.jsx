@@ -1,20 +1,16 @@
 import { useState, useEffect } from 'react'
-import { MemoryRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import CssBaseline from '@mui/material/CssBaseline'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import Container from '@mui/material/Container'
 import Box from '@mui/material/Box'
 import Paper from '@mui/material/Paper'
 
+import { Router, CurrentRoute, useLocation, useHref } from './routing'
 import './App.css'
 
 import Spinner from './Spinner'
 import TopNav from './TopNav'
 import BottomNav from './BottomNav'
-
-import IdsPage from './IdsPage'
-import KeysPage from './KeysPage'
-import SettingsPage from './SettingsPage'
 
 const darkTheme = createTheme({
   palette: {
@@ -38,8 +34,6 @@ export default function App() {
   )
 }
 
-
-
 function Loading(){
   return <Container
     disableGutters
@@ -59,6 +53,7 @@ function Loading(){
 
 function Loaded(){
   return <Router>
+    <LogLocation />
     <Container
       disableGutters
       sx={{
@@ -69,17 +64,20 @@ function Loaded(){
       }}
     >
       <TopNav />
-      <Paper sx={{ p: 1, flexGrow: 1 }} elevation={1}>
-        <Routes>
-          <Route path="/" element={<Navigate replace to="/ids" />} />
-          <Route path="/ids" element={<IdsPage />} />
-          <Route path="/keys" element={<KeysPage />} />
-          <Route path="/settings" element={<SettingsPage />} />
-        </Routes>
+      <Paper sx={{ flexGrow: 1 }} elevation={1}>
+        <CurrentRoute />
       </Paper>
       <Paper elevation={3} >
         <BottomNav />
       </Paper>
     </Container>
   </Router>
+}
+
+function LogLocation(){
+  const location = useLocation()
+  const href = useHref(location)
+  console.log('➡', href)
+  // window.location is not where this app manages location
+  // console.log('➡', (window.location+'').split(window.location.origin)[1])
 }

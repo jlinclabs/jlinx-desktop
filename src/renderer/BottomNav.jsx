@@ -1,36 +1,39 @@
 import * as React from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
 import BottomNavigation from '@mui/material/BottomNavigation'
 import BottomNavigationAction from '@mui/material/BottomNavigationAction'
 import BadgeIcon from '@mui/icons-material/Badge'
 import KeyIcon from '@mui/icons-material/Key'
 import SettingsIcon from '@mui/icons-material/Settings'
 import LocationOnIcon from '@mui/icons-material/LocationOn'
+import { useLocation, useGoToPage } from './routing'
 
 export default function BottomNav(props) {
-  const navigate = useNavigate()
+  // const navigate = useNavigate()
   const location = useLocation()
+  console.log({ location })
+  const goToPage = useGoToPage()
   const onChange = React.useCallback(
-    (event, pathname) => { navigate(`/${pathname}`) },
-    [navigate]
+    (event, pageName) => { goToPage(pageName) },
+    [goToPage]
   )
+
   return <BottomNavigation {...{
     value: location.pathname.slice(1),
     onChange
   }}>
     <BottomNavigationAction
-      label="IDs"
-      value="ids"
+      label="DIDs"
+      value="Dids"
       icon={<BadgeIcon />}
     />
     <BottomNavigationAction
       label="Keys"
-      value="keys"
+      value="Keys"
       icon={<KeyIcon />}
     />
     <BottomNavigationAction
       label="Settings"
-      value="settings"
+      value="Settings"
       icon={<SettingsIcon />}
     />
   </BottomNavigation>

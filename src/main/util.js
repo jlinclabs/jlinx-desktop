@@ -2,8 +2,6 @@
 const { URL } = require('url')
 const path = require('path')
 
-
-
 if (process.env.NODE_ENV === 'development') {
   const port = process.env.PORT || 1212
   module.exports.resolveHtmlPath = (htmlFileName) => {
