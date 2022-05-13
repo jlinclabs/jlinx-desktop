@@ -18,7 +18,11 @@ handleQuery('getHypercoreStatus', async (...args) => {
 handleQuery('getAllKeys', async () => {
   const jlinx = await getJlinx()
   const keys = await jlinx.keys.all()
-  return keys
+  return keys.map(keyPair => ({
+    publicKey: keyPair.publicKeyAsString,
+    type: keyPair.type,
+    createdAt: keyPair.createdAt,
+  }))
 })
 
 handleCommand('createKey', async (opts) => {

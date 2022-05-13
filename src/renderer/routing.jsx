@@ -15,7 +15,9 @@ import {
 import DidsPage from './DidsPage'
 import DidShowPage from './DidShowPage'
 import DidCreatePage from './DidCreatePage'
-import KeysPage from './KeysPage'
+import KeysListPage from './KeysListPage'
+import KeyShowPage from './KeyShowPage'
+import KeyCreatePage from './KeyCreatePage'
 import SettingsPage from './SettingsPage'
 
 const pages = [
@@ -41,7 +43,17 @@ const pages = [
   {
     name: 'Keys',
     path: '/keys',
-    element: <KeysPage />,
+    element: <KeysListPage />,
+  },
+  {
+    name: 'Keys',
+    path: '/keys/new',
+    element: <KeyCreatePage />,
+  },
+  {
+    name: 'Keys',
+    path: '/keys/:publicKey',
+    element: <KeyShowPage />,
   },
   {
     name: 'Settings',
