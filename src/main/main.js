@@ -8,14 +8,14 @@
  * When running `npm run build` or `npm run build:main`, this file is compiled to
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
-import path from 'path'
-import { app, BrowserWindow, shell, ipcMain } from 'electron'
-import { autoUpdater } from 'electron-updater'
-import log from 'electron-log'
-import MenuBuilder from './menu'
-import { resolveHtmlPath } from './util'
+const path = require('path')
+const { app, BrowserWindow, shell, ipcMain } = require('electron')
+const { autoUpdater } = require('electron-updater')
+const log = require('electron-log')
+const MenuBuilder = require('./menu.js')
+const { resolveHtmlPath } = require('./util.js')
 
-export default class AppUpdater {
+class AppUpdater {
   constructor() {
     log.transports.file.level = 'info'
     autoUpdater.logger = log
@@ -23,7 +23,10 @@ export default class AppUpdater {
   }
 }
 
-let mainWindow = null
+module.exports = AppUpdater
+
+let mainWindow
+let jlinx
 
 ipcMain.on('ipc-example', async (event, arg) => {
   const msgTemplate = (pingPong) => `IPC test: ${pingPong}`
@@ -56,7 +59,8 @@ const installExtensions = async () => {
     .catch(console.log)
 }
 
-const createWindow = async () => {
+const createMainWindow = async () => {
+  if (mainWindow) return
   if (isDebug) {
     await installExtensions()
   }
@@ -124,14 +128,27 @@ app.on('window-all-closed', () => {
   }
 })
 
+app.on('quit', () => {
+  if (jlinx) jlinx.destroy()
+})
+
 app
   .whenReady()
-  .then(() => {
-    createWindow()
+  .then(async () => {
+    const { default: JlinxApp } = await import('jlinx-app')
+
+    jlinx = new JlinxApp({
+      storagePath: path.join(app.getPath('userData'), 'jlinx'),
+    })
+    console.log({ jlinx })
+
+    createMainWindow()
     app.on('activate', () => {
       // On macOS it's common to re-create a window in the app when the
       // dock icon is clicked and there are no other windows open.
-      if (mainWindow === null) createWindow()
+      createMainWindow()
     })
   })
-  .catch(console.log)
+  .catch(error => {
+    console.error(error)
+  })

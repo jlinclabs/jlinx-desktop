@@ -1,11 +1,11 @@
-import {
+const {
   app,
   Menu,
   shell,
   BrowserWindow,
-} from 'electron'
+} = require('electron')
 
-export default class MenuBuilder {
+module.exports = class MenuBuilder {
   constructor(mainWindow) {
     this.mainWindow = mainWindow
   }
@@ -56,7 +56,7 @@ export default class MenuBuilder {
         { label: 'Services', submenu: [] },
         { type: 'separator' },
         {
-          label: 'Hide ElectronReact',
+          label: 'Hide Jlinx',
           accelerator: 'Command+H',
           selector: 'hide:',
         },
