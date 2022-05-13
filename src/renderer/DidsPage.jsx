@@ -13,6 +13,7 @@ import Fab from '@mui/material/Fab'
 import ImageIcon from '@mui/icons-material/Image'
 import AddIcon from '@mui/icons-material/Add'
 
+import PageHeader from './PageHeader'
 import Link from './Link'
 
 import { useJlinxAllDidsDocumentsQuery } from './jlinxHooks'
@@ -31,9 +32,7 @@ export default function DidsPage(){
     >
       <AddIcon />
     </Fab>
-    <Typography sx={{m:1}} variant="h4" component="h1" gutterBottom>
-      DIDs
-    </Typography>
+    <PageHeader>DIDs</PageHeader>
     <DidDocumentsList {...{
       loading: query.loading,
       error: query.error,

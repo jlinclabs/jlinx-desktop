@@ -4,16 +4,14 @@ import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 
 import { useJlinxHypercoreStatusQuery } from './jlinxHooks'
-
+import InspectObject from './InspectObject'
+import PageHeader from './PageHeader'
 
 export default function SettingsPage(){
   const query = useJlinxHypercoreStatusQuery()
 
   return <Box sx={{ pb: '50px', my: 4 }}>
-    <Typography variant="h4" component="h1" gutterBottom>
-      Settings Page
-    </Typography>
-
-    <div><pre><code>{JSON.stringify(query.result)}</code></pre></div>
+    <PageHeader>Settings</PageHeader>
+    <InspectObject object={query.result}/>
   </Box>
 }

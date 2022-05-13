@@ -7,7 +7,7 @@ import Alert from '@mui/material/Alert'
 
 import { useNavigate } from './routing'
 import InspectObject from './InspectObject'
-
+import PageHeader from './PageHeader'
 import { useJlinxDidCreateCommand } from './jlinxHooks'
 
 export default function DidCreatePage(){
@@ -29,9 +29,7 @@ export default function DidCreatePage(){
   )
 
   return <Box sx={{ flexGrow: 1 }}>
-    <Typography sx={{m:1}} variant="h4" component="h1" gutterBottom>
-      Creating new DID
-    </Typography>
+    <PageHeader>Creating new DID</PageHeader>
     {command.isFailure && <Alert severity="error">{`${command.error}`}</Alert>}
   </Box>
 }

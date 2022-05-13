@@ -1,4 +1,5 @@
 import * as React from 'react'
+import Box from '@mui/material/Box'
 
 export default function InspectObject({ object }){
   let string
@@ -13,9 +14,15 @@ export default function InspectObject({ object }){
       string = `ERROR: ${error}`
     }
   }
-  return <pre className="InspectObject">
-    <code>{string}</code>
-  </pre>
+  return <Box
+    className="InspectObject"
+    sx={{
+      m: 1,
+      backgroundColor: 'background.paper',
+    }}
+  >
+    <pre><code>{string}</code></pre>
+  </Box>
 }
 
 function inspect(object, indentation = 2){

@@ -61,10 +61,18 @@ function Loaded(){
         display: 'flex',
         flexDirection: 'column',
         height: '100vh',
+        overflow: 'hidden',
       }}
     >
       <TopNav />
-      <Paper sx={{ flexGrow: 1 }} elevation={1}>
+      <Paper
+        sx={{
+          flexGrow: 1,
+          maxHeight: 'calc(100vh - 64px - 56px)',
+          overflow: 'scroll',
+        }}
+        elevation={1}
+      >
         <CurrentRoute />
       </Paper>
       <Paper elevation={3} >

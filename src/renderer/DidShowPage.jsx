@@ -12,6 +12,7 @@ import Avatar from '@mui/material/Avatar'
 import Alert from '@mui/material/Alert'
 import ImageIcon from '@mui/icons-material/Image'
 
+import PageHeader from './PageHeader'
 import Link from './Link'
 import InspectObject from './InspectObject'
 
@@ -22,9 +23,7 @@ export default function DidShowPage(){
   const query = useJlinxDidDocumentQuery(did)
 
   return <Box sx={{ flexGrow: 1 }}>
-    <Typography sx={{m:1}} variant="h4" component="h1" gutterBottom>
-      DIDs
-    </Typography>
+    <PageHeader>{did}</PageHeader>
     {query.error && <Alert severity="error">{`${query.error}`}</Alert>}
     {query.loaded && <DidDocument {...{ didDocument: query.result }}/>}
     <ol>
@@ -36,10 +35,5 @@ export default function DidShowPage(){
 }
 
 function DidDocument({ didDocument }){
-  return <Box sx={{
-    m: 1,
-    backgroundColor: 'background.paper',
-  }}>
-    <InspectObject object={didDocument}/>
-  </Box>
+  return <InspectObject object={didDocument}/>
 }

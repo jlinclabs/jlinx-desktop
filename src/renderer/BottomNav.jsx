@@ -19,7 +19,13 @@ export default function BottomNav(props) {
 
   return <BottomNavigation {...{
     value: location.pathname.slice(1),
-    onChange
+    onChange,
+    sx: {
+      backgroundColor: 'primary.dark',
+      'button': {
+        color: 'grey.900',
+      },
+    },
   }}>
     <BottomNavigationAction
       label="DIDs"
