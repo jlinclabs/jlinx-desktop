@@ -61,6 +61,7 @@ function Loaded(){
         display: 'flex',
         flexDirection: 'column',
         height: '100vh',
+        width: '100vw',
         overflow: 'hidden',
       }}
     >
@@ -68,7 +69,6 @@ function Loaded(){
       <Paper
         sx={{
           flexGrow: 1,
-          maxHeight: 'calc(100vh - 64px - 56px)',
           overflow: 'scroll',
         }}
         elevation={1}

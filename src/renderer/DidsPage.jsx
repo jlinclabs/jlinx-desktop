@@ -73,6 +73,7 @@ function DidDocumentsListMember({ didDocument }){
       primaryTypographyProps: {
         sx: {
           fontFamily: 'monospace',
+          whiteSpace: 'nowrap',
         },
         component: Link,
         to: showHref,
