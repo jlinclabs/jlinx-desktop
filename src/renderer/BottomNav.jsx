@@ -9,16 +9,13 @@ import LocationOnIcon from '@mui/icons-material/LocationOn'
 import { useLocation, useGoToPage } from './routing'
 
 export default function BottomNav(props) {
-  // const navigate = useNavigate()
   const location = useLocation()
-  console.log({ location })
   const goToPage = useGoToPage()
   const onChange = React.useCallback(
     (event, pageName) => { goToPage(pageName) },
     [goToPage]
   )
   const height = 56
-
   return <Box sx={{ height }}>
     <BottomNavigation {...{
       value: location.pathname.slice(1),
