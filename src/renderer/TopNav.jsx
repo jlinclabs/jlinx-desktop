@@ -43,8 +43,11 @@ export default function TopNav() {
       >
         <MenuIcon />
       </IconButton>
-      <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-        {location.pathname}
+      <Typography variant="h6" component="div" sx={{ flexGrow: 1, textAlign: 'center' }}>
+        {'JLINX'}
+      </Typography>
+      <Typography variant="h7" component="div" sx={{ color: 'orange' }}>
+        {'BETA'}
       </Typography>
       {auth && (
         <div>
