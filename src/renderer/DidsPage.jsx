@@ -15,12 +15,11 @@ import AddIcon from '@mui/icons-material/Add'
 
 import PageHeader from './PageHeader'
 import Link from './Link'
-
-import { useJlinxAllDidsDocumentsQuery } from './jlinxHooks'
+import ErrorAlert from './ErrorAlert'
+import { useQuery } from './ipc'
 
 export default function DidsPage(){
-
-  const query = useJlinxAllDidsDocumentsQuery()
+  const query = useQuery('getAllDids')
 
   return <Box sx={{ flexGrow: 1 }}>
     <Fab
@@ -33,9 +32,9 @@ export default function DidsPage(){
       <AddIcon />
     </Fab>
     <PageHeader>DIDs</PageHeader>
+    {query.error && <ErrorAlert error={query.error}/>}
     <DidDocumentsList {...{
       loading: query.loading,
-      error: query.error,
       didDocuments: query.result,
     }}/>
   </Box>

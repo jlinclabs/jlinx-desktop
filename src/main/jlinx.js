@@ -1,15 +1,13 @@
 const Path = require('path')
-const { app, ipcMain } = require('electron')
+const { app } = require('electron')
+const { handleQuery, handleCommand } = require('./ipc')
 
-const handle = (eventType, handler) =>
-  ipcMain.handle(`jlinx:${eventType}`, handler)
-
-handle('config', async (event, ...args) => {
+handleQuery('getConfig', async (...args) => {
   const jlinx = await getJlinx()
   return await jlinx.config.read(...args)
 })
 
-handle('hypercore:status', async (event, ...args) => {
+handleQuery('getHypercoreStatus', async (...args) => {
   const jlinx = await getJlinx()
   await jlinx.ready()
   await jlinx.server.connected()
@@ -17,13 +15,39 @@ handle('hypercore:status', async (event, ...args) => {
   return status
 })
 
-handle('dids:resolve', async (event, did) => {
+handleQuery('getAllKeys', async () => {
+  const jlinx = await getJlinx()
+  const keys = await jlinx.keys.all()
+  return keys
+})
+
+handleCommand('createKey', async (opts) => {
+  const jlinx = await getJlinx()
+  let keyPair
+  if (opts.type === 'signing')
+    keyPair = await jlinx.keys.createSigningKeyPair()
+  else if (opts.type === 'encrypting')
+    keyPair = await jlinx.keys.createEncryptingKeyPair()
+  else
+    throw new Error(`invalid type "${opts.type}"`)
+  return keyPair
+})
+
+handleQuery('getDidDocument', async (did) => {
+  console.log('???getDidDocument', {did})
+  if (!did) return
+  const jlinx = await getJlinx()
+  return await jlinx.resolveDid(did)
+})
+
+
+handleCommand('resolveDid', async (did) => {
   const jlinx = await getJlinx()
   if (!did) return
   return await jlinx.resolveDid(did)
 })
 
-handle('dids:all', async (event, ...args) => {
+handleQuery('getAllDids', async (...args) => {
   const jlinx = await getJlinx()
   const dids = await jlinx.dids.all(...args)
   const didDocuments = await Promise.all(
@@ -32,17 +56,17 @@ handle('dids:all', async (event, ...args) => {
   return didDocuments
 })
 
-handle('dids:track', async (event, ...args) => {
+handleCommand('trackDid', async (...args) => {
   const jlinx = await getJlinx()
   return await jlinx.dids.track(...args)
 })
 
-handle('dids:untrack', async (event, ...args) => {
+handleCommand('untrackDid', async (...args) => {
   const jlinx = await getJlinx()
   return await jlinx.dids.untrack(...args)
 })
 
-handle('dids:create', async (event, ...args) => {
+handleCommand('createDid', async (...args) => {
   const jlinx = await getJlinx()
   return await jlinx.createDid(...args)
 })

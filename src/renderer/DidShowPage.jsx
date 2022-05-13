@@ -15,17 +15,16 @@ import ImageIcon from '@mui/icons-material/Image'
 import PageHeader from './PageHeader'
 import Link from './Link'
 import InspectObject from './InspectObject'
-
-import { useJlinxDidDocumentQuery } from './jlinxHooks'
+import { useQuery } from './ipc'
 
 export default function DidShowPage(){
   const { did } = useParams()
-  const query = useJlinxDidDocumentQuery(did)
-
+  const query = useQuery('getDidDocument', did)
+  console.log(query)
   return <Box sx={{ flexGrow: 1 }}>
     <PageHeader>{did}</PageHeader>
     {query.error && <Alert severity="error">{`${query.error}`}</Alert>}
-    {query.loaded && <DidDocument {...{ didDocument: query.result }}/>}
+    {query.resolved && <DidDocument {...{ didDocument: query.result }}/>}
     <ol>
       {['https://testnet1.jlinx.io', 'https://testnet2.jlinx.io'].map(host =>
         <li key={host}>view on <Link href={`${host}/${did}`}>{host}</Link></li>
@@ -35,5 +34,6 @@ export default function DidShowPage(){
 }
 
 function DidDocument({ didDocument }){
+  console.log({ didDocument })
   return <InspectObject object={didDocument}/>
 }

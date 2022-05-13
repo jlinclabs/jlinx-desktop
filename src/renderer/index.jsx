@@ -1,4 +1,3 @@
-import './jlinx'
 import { createRoot } from 'react-dom/client'
 import App from './App'
 

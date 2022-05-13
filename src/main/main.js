@@ -15,6 +15,7 @@ const { autoUpdater } = require('electron-updater')
 const log = require('electron-log')
 const MenuBuilder = require('./menu.js')
 const { resolveHtmlPath } = require('./util.js')
+require('./ipc.js')
 require('./jlinx.js')
 
 class AppUpdater {

@@ -8,24 +8,20 @@ import Alert from '@mui/material/Alert'
 import { useNavigate } from './routing'
 import InspectObject from './InspectObject'
 import PageHeader from './PageHeader'
-import { useJlinxDidCreateCommand } from './jlinxHooks'
+import { useCommand } from './ipc'
 
 export default function DidCreatePage(){
   const navigate = useNavigate()
-  const command = useJlinxDidCreateCommand()
-  console.log('CREATE CMD', command)
-  useEffect(
-    () => { command.exec() },
-    []
-  )
+  const command = useCommand('createDid', true)
+
   useEffect(
     () => {
-      if (!command.isSuccess) return
+      if (!command.resolved) return
       console.log('SUCCESS', command.result)
       const did = command.result.id
       navigate(`/dids/${did}`)
     },
-    [command.isSuccess]
+    [command.state]
   )
 
   return <Box sx={{ flexGrow: 1 }}>
