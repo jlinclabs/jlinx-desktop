@@ -34,17 +34,17 @@ export default function BottomNav(props) {
     }}>
       <BottomNavigationAction
         label="DIDs"
-        value="Dids"
+        value="DidsPage"
         icon={<BadgeIcon />}
       />
       <BottomNavigationAction
         label="Keys"
-        value="Keys"
+        value="KeysListPage"
         icon={<KeyIcon />}
       />
       <BottomNavigationAction
         label="Settings"
-        value="Settings"
+        value="SettingsPage"
         icon={<SettingsIcon />}
       />
     </BottomNavigation>

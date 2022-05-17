@@ -7,6 +7,7 @@ import {
   Route,
   Navigate,
   useRoutes,
+  useSearchParams,
   useLocation,
   useHref,
   useNavigate,
@@ -21,53 +22,37 @@ import KeyCreatePage from './KeyCreatePage'
 import SettingsPage from './SettingsPage'
 
 const pages = [
-  {
-    path: '/',
-    element: <Navigate replace to="/dids" />,
-  },
-  {
-    name: 'Dids',
-    path: '/dids',
-    element: <DidsPage />,
-  },
-  {
-    name: 'DidCreate',
-    path: '/dids/new',
-    element: <DidCreatePage />,
-  },
-  {
-    name: 'DidShow',
-    path: '/dids/:did',
-    element: <DidShowPage />,
-  },
-  {
-    name: 'Keys',
-    path: '/keys',
-    element: <KeysListPage />,
-  },
-  {
-    name: 'Keys',
-    path: '/keys/new',
-    element: <KeyCreatePage />,
-  },
-  {
-    name: 'Keys',
-    path: '/keys/:publicKey',
-    element: <KeyShowPage />,
-  },
-  {
-    name: 'Settings',
-    path: '/settings',
-    element: <SettingsPage />,
-  },
-  {
-    path: '*',
-    element: <Navigate to="/" />,
-  },
+  // HomePage,
+  DidsPage,
+  DidCreatePage,
+  // DidResolvePage,
+  DidShowPage,
+  KeysListPage,
+  KeyCreatePage,
+  KeyShowPage,
+  SettingsPage,
 ]
 
 export function CurrentRoute(){
-  return useRoutes(pages)
+  const [searchParams] = useSearchParams()
+  const params = {}
+  for (const [key, value] of searchParams) params[key] = value
+  const routes = [
+    {
+      path: '/',
+      element: <Navigate replace to="/DidsPage" />,
+    },
+    ...pages.map(Page => ({
+      path: `/${Page.name}`,
+      element: <Page {...{params}}/>,
+    })),
+    {
+      path: '*',
+      element: <Navigate to="/DidsPage" />,
+    },
+  ]
+  const route = useRoutes(routes)
+  return route
 }
 
 export { Router, useLocation, useHref, useNavigate }
@@ -76,14 +61,35 @@ export function openExternalUrl(url){
   window.electron.shell.openExternal(url)
 }
 
+export function toPage(pageName, params = {}){
+  const page = pages.find(page => page.name === pageName)
+  if (!page) throw new Error(`page "${pageName}" not found`)
+  const search = paramsToSearch(params)
+  console.log('TO PAGE', {pathname: `/${page.name}`, search})
+  return {pathname: `/${page.name}`, search}
+}
+
 export function useGoToPage(){
   const navigate = useNavigate()
   return useCallback(
     (pageName, params) => {
-      const page = pages.find(page => page.name === pageName)
-      if (!page) throw new Error(`page "${pageName}" not found`)
-      navigate({pathname: page.path})
+      navigate(toPage(pageName, params))
     },
     [navigate]
   )
+}
+
+
+function paramsToSearch(params){
+  const search = new URLSearchParams()
+  for (const prop in params) search.set(prop, params[prop])
+  return search.toString()
+}
+
+function searchToParams(search){
+  const searchParams = new URLSearchParams(search);
+  const props = {}
+  for (const prop of searchParams)
+    props[prop] = searchParams.get(prop)
+  return props
 }

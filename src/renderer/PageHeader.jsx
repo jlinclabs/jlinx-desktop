@@ -7,5 +7,6 @@ export default function PageHeader({children, ...props}){
     variant="h4"
     component="h1"
     gutterBottom
+    {...props}
   >{children}</Typography>
 }

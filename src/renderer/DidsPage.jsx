@@ -13,6 +13,7 @@ import Fab from '@mui/material/Fab'
 import ImageIcon from '@mui/icons-material/Image'
 import AddIcon from '@mui/icons-material/Add'
 
+import { toPage } from './routing'
 import PageHeader from './PageHeader'
 import Link from './Link'
 import ErrorAlert from './ErrorAlert'
@@ -60,7 +61,7 @@ function DidDocumentsList({ loading, error, didDocuments }){
 
 
 function DidDocumentsListMember({ didDocument }){
-  const showHref = `/dids/${didDocument.id}`
+  const did = didDocument.id
   return <ListItem>
     <ListItemAvatar>
       <Avatar>
@@ -75,7 +76,7 @@ function DidDocumentsListMember({ didDocument }){
           whiteSpace: 'nowrap',
         },
         component: Link,
-        to: showHref,
+        to: toPage('DidShowPage', { did }),
       },
       primary: `${didDocument.id}`,
       secondary: `created: ${didDocument.created}`,

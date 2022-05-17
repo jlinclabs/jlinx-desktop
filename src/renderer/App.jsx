@@ -85,7 +85,7 @@ function Loaded(){
 function LogLocation(){
   const location = useLocation()
   const href = useHref(location)
-  console.log('➡', href)
+  console.log('➡', href, location)
   // window.location is not where this app manages location
   // console.log('➡', (window.location+'').split(window.location.origin)[1])
 }

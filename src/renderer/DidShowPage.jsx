@@ -1,5 +1,4 @@
 import * as React from 'react'
-import { useParams } from 'react-router-dom'
 import Paper from '@mui/material/Paper'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
@@ -17,8 +16,12 @@ import Link from './Link'
 import InspectObject from './InspectObject'
 import { useQuery } from './ipc'
 
-export default function DidShowPage(){
-  const { did } = useParams()
+export default function DidShowPage(props){
+  // console.log('DidShowPage', { props })
+  // const [params] = useSearchParams()
+  // const did = params.get('did')
+  const { did } = props.params
+  console.log({ did })
   const query = useQuery('getDidDocument', did)
   console.log(query)
   return <Box sx={{ flexGrow: 1 }}>
