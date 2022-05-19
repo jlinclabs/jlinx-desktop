@@ -72,7 +72,9 @@ handleCommand('untrackDid', async (...args) => {
 
 handleCommand('createDid', async (...args) => {
   const jlinx = await getJlinx()
-  return await jlinx.createDid(...args)
+  const didDocument = await jlinx.createDid(...args)
+  await jlinx.replicateDid(didDocument.id)
+  return didDocument
 })
 
 handleQuery('getAllAccounts', async () => {

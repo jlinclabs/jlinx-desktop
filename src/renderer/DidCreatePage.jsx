@@ -17,9 +17,34 @@ export default function DidCreatePage(){
     <PageHeader variant="h5">Track an existing DID</PageHeader>
     <ResolveDidForm {...{}}/>
     <PageHeader variant="h5">Create a new DID</PageHeader>
+    <CreateButton />
   </Box>
 }
 
+function CreateButton(){
+  const goToPage = useGoToPage()
+  const command = useCommand('createDid')
+  const onClick = React.useCallback(
+    () => {
+      if (command.idle) command.call()
+    },
+    [command.state]
+  )
+  React.useEffect(
+    () => {
+      if (!command.resolved || !command.result) return
+      const did = command.result.id
+      if (!did) {console.error('weird', command.result); return}
+      goToPage('DidShow', { did })
+    },
+    [command.state]
+  )
+  return <Button {...{
+    variant: 'contained',
+    onClick,
+    disabled: !command.idle,
+  }}>{command.idle ? 'Create' : 'Creating…'}</Button>
+}
 
 function ResolveDidForm({ }){
   const goToPage = useGoToPage()
