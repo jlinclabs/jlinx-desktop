@@ -19,8 +19,8 @@ import Link from './Link'
 import ErrorAlert from './ErrorAlert'
 import { useQuery } from './ipc'
 
-export default function DidsPage(){
-  const query = useQuery('getAllDids')
+export default function AccountsPage(){
+  const query = useQuery('getAllAccounts')
 
   return <Box sx={{ flexGrow: 1 }}>
     <Fab
@@ -28,40 +28,39 @@ export default function DidsPage(){
       aria-label="add"
       sx={{ position: 'fixed', bottom: 65, right: 0, m: 1 }}
       component={Link}
-      to={toPage('DidCreate')}
+      to={toPage('AccountAdd')}
     >
       <AddIcon />
     </Fab>
-    <PageHeader>DIDs</PageHeader>
+    <PageHeader>Accounts</PageHeader>
     {query.error && <ErrorAlert error={query.error}/>}
-    <DidDocumentsList {...{
+    <AccountsList {...{
       loading: query.loading,
-      didDocuments: query.result,
+      accounts: query.result,
     }}/>
   </Box>
 }
 
 
-function DidDocumentsList({ loading, error, didDocuments }){
+function AccountsList({ loading, error, accounts }){
   return <List sx={{
     width: '100%',
     // bgcolor: 'background.paper',
     // flexGrow: 1,
   }}>
-    {(loading || !didDocuments)
+    {(loading || !accounts)
       ? Array(10).fill().map((_, i) =>
         <Skeleton key={i} animation="wave" height="100px" />
       )
-      : didDocuments.map(didDocument =>
-        <DidDocumentsListMember {...{key: didDocument.id, didDocument}}/>
+      : accounts.map(account =>
+        <AccountsListMember {...{key: account.id, account}}/>
       )
     }
   </List>
 }
 
 
-function DidDocumentsListMember({ didDocument }){
-  const did = didDocument.id
+function AccountsListMember({ account }){
   return <ListItem>
     <ListItemAvatar>
       <Avatar>
@@ -69,7 +68,7 @@ function DidDocumentsListMember({ didDocument }){
       </Avatar>
     </ListItemAvatar>
 
-    <ListItemText {...{
+    {/* <ListItemText {...{
       primaryTypographyProps: {
         sx: {
           fontFamily: 'monospace',
@@ -80,6 +79,7 @@ function DidDocumentsListMember({ didDocument }){
       },
       primary: `${didDocument.id}`,
       secondary: `created: ${didDocument.created}`,
-    }}/>
+    }}/> */}
+    <InspectObject object={account}/>
   </ListItem>
 }

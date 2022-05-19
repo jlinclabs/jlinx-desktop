@@ -30,8 +30,8 @@ export default function useAsync(asyncFunction, immediate = true){
   )
 
   useEffect(
-    () => { if (immediate) ctx.call() },
-    [ctx.call, immediate]
+    () => { if (immediate && state === 0) ctx.call() },
+    [ctx.call, immediate, state]
   )
 
   return ctx

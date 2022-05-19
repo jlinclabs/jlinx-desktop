@@ -7,7 +7,7 @@ import Alert from '@mui/material/Alert'
 import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
 
-import { useNavigate } from './routing'
+import { useGoToPage } from './routing'
 import InspectObject from './InspectObject'
 import PageHeader from './PageHeader'
 import { useCommand } from './ipc'
@@ -15,26 +15,33 @@ import { useCommand } from './ipc'
 export default function DidCreatePage(){
   return <Box sx={{ flexGrow: 1, p: 1 }}>
     <PageHeader variant="h5">Track an existing DID</PageHeader>
-    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-      <ResolveDidForm {...{}}/>
-    </Box>
+    <ResolveDidForm {...{}}/>
     <PageHeader variant="h5">Create a new DID</PageHeader>
   </Box>
 }
 
 
 function ResolveDidForm({ }){
-  const navigate = useNavigate()
   const goToPage = useGoToPage()
 
+  const inputRef = React.useRef()
   const onSubmit = React.useCallback(
-    () => {
-      goToPage('DidResolve')
+    event => {
+      event.preventDefault()
+      const input = inputRef.current.querySelector('input')
+      console.log({ input })
+      const did = input.value
+      goToPage('DidResolve', { did })
     },
-    [navigate]
+    [goToPage]
   )
-  return <form {...{onSubmit}}>
+  return <Box {...{
+    onSubmit,
+    component: 'form',
+    sx: { display: 'flex', alignItems: 'center' },
+  }}>
     <TextField
+      ref={inputRef}
       sx={{flex: '1 1 auto', mr: 1 }}
       label="DID"
       variant="outlined"
@@ -42,7 +49,7 @@ function ResolveDidForm({ }){
       placeholder="did:jlinx:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
     />
     <Button variant="contained">Track</Button>
-  </form>
+  </Box>
 }
 
 

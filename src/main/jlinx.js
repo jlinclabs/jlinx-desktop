@@ -45,7 +45,7 @@ handleQuery('getDidDocument', async (did) => {
 })
 
 
-handleCommand('resolveDid', async (did) => {
+handleCommand('resolveDid', async ({did}) => {
   const jlinx = await getJlinx()
   if (!did) return
   return await jlinx.resolveDid(did)
@@ -74,6 +74,19 @@ handleCommand('createDid', async (...args) => {
   const jlinx = await getJlinx()
   return await jlinx.createDid(...args)
 })
+
+handleQuery('getAllAccounts', async () => {
+  const jlinx = await getJlinx()
+  // return await jlinx.accounts.getAll()
+  return []
+})
+
+handleCommand('addAccount', async (...args) => {
+  const jlinx = await getJlinx()
+  // return await jlinx.accounts.add(...args)
+  return {id: 'fake_account_id'}
+})
+
 
 getJlinx().then(jlinx => jlinx.ready())
 

@@ -13,25 +13,32 @@ import {
   useNavigate,
 } from 'react-router-dom'
 
+import AccountsPage from './AccountsPage'
+import AccountAddPage from './AccountAddPage'
 import DidsPage from './DidsPage'
 import DidShowPage from './DidShowPage'
 import DidCreatePage from './DidCreatePage'
+import DidResolvePage from './DidResolvePage'
 import KeysListPage from './KeysListPage'
 import KeyShowPage from './KeyShowPage'
 import KeyCreatePage from './KeyCreatePage'
 import SettingsPage from './SettingsPage'
 
 const pages = [
-  // HomePage,
+  AccountsPage,
+  AccountAddPage,
   DidsPage,
   DidCreatePage,
-  // DidResolvePage,
+  DidResolvePage,
   DidShowPage,
   KeysListPage,
   KeyCreatePage,
   KeyShowPage,
   SettingsPage,
 ]
+
+const pageToName = page => page.name.split('Page')[0]
+const pageToPath = page => `/${pageToName(page)}`
 
 export function CurrentRoute(){
   const [searchParams] = useSearchParams()
@@ -40,15 +47,16 @@ export function CurrentRoute(){
   const routes = [
     {
       path: '/',
-      element: <Navigate replace to="/DidsPage" />,
+      element: <Navigate replace to="/Dids" />,
     },
     ...pages.map(Page => ({
-      path: `/${Page.name}`,
+      path: pageToPath(Page),
       element: <Page {...{params}}/>,
     })),
     {
       path: '*',
-      element: <Navigate to="/DidsPage" />,
+      // element: <Navigate to="/DidsPage" />,
+      element: <span>NOT FOUND</span>
     },
   ]
   const route = useRoutes(routes)
@@ -62,11 +70,10 @@ export function openExternalUrl(url){
 }
 
 export function toPage(pageName, params = {}){
-  const page = pages.find(page => page.name === pageName)
+  const page = pages.find(page => pageToName(page) === pageName)
   if (!page) throw new Error(`page "${pageName}" not found`)
   const search = paramsToSearch(params)
-  console.log('TO PAGE', {pathname: `/${page.name}`, search})
-  return {pathname: `/${page.name}`, search}
+  return {pathname: pageToPath(page), search}
 }
 
 export function useGoToPage(){

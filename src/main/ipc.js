@@ -20,7 +20,7 @@ ipcMain.handle('execQuery', async (event, queryName, options) => {
 
 ipcMain.handle('execCommand', async (event, commandName, options) => {
   if (!(commandName in commands))
-    throw new Error(`query "${commandName}" is not defined`)
+    throw new Error(`command "${commandName}" is not defined`)
   console.log('execCommand', commandName, options)
   return await commands[commandName](options)
 })

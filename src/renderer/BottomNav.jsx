@@ -2,6 +2,7 @@ import * as React from 'react'
 import Box from '@mui/material/Box'
 import BottomNavigation from '@mui/material/BottomNavigation'
 import BottomNavigationAction from '@mui/material/BottomNavigationAction'
+import SwitchAccountIcon from '@mui/icons-material/SwitchAccount'
 import BadgeIcon from '@mui/icons-material/Badge'
 import KeyIcon from '@mui/icons-material/Key'
 import SettingsIcon from '@mui/icons-material/Settings'
@@ -33,18 +34,23 @@ export default function BottomNav(props) {
       },
     }}>
       <BottomNavigationAction
+        label="Accounts"
+        value="Accounts"
+        icon={<SwitchAccountIcon />}
+      />
+      <BottomNavigationAction
         label="DIDs"
-        value="DidsPage"
+        value="Dids"
         icon={<BadgeIcon />}
       />
       <BottomNavigationAction
         label="Keys"
-        value="KeysListPage"
+        value="KeysList"
         icon={<KeyIcon />}
       />
       <BottomNavigationAction
         label="Settings"
-        value="SettingsPage"
+        value="Settings"
         icon={<SettingsIcon />}
       />
     </BottomNavigation>

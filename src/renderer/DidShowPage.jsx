@@ -17,11 +17,7 @@ import InspectObject from './InspectObject'
 import { useQuery } from './ipc'
 
 export default function DidShowPage(props){
-  // console.log('DidShowPage', { props })
-  // const [params] = useSearchParams()
-  // const did = params.get('did')
   const { did } = props.params
-  console.log({ did })
   const query = useQuery('getDidDocument', did)
   console.log(query)
   return <Box sx={{ flexGrow: 1 }}>
