@@ -94,8 +94,8 @@ getJlinx().then(jlinx => jlinx.ready())
 
 async function getJlinx(){
   if (!getJlinx.jlinx){
-    const { default: JlinxApp } = await import('jlinx-app')
-    getJlinx.jlinx = new JlinxApp({
+    const { default: JlinxClient } = await import('jlinx-client')
+    getJlinx.jlinx = new JlinxClient({
       storagePath: Path.join(app.getPath('userData'), 'jlinx'),
     })
   }
