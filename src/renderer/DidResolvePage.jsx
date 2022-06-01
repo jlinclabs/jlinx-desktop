@@ -15,7 +15,7 @@ import { useCommand } from './ipc'
 
 export default function DidResolvePage(props){
   const { did } = props.params
-  const command = useCommand('resolveDid', {did})
+  const command = useCommand('resolveDid', [{did}], true)
   console.log({command})
   return <Box sx={{ flexGrow: 1, p: 1 }}>
     <PageHeader>{did}</PageHeader>

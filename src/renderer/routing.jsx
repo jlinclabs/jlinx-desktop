@@ -13,27 +13,35 @@ import {
   useNavigate,
 } from 'react-router-dom'
 
+import IdentificationsPage from './IdentificationsPage'
+import IdentificationCreatePage from './IdentificationCreatePage'
+import IdentificationShowPage from './IdentificationShowPage'
 import AccountsPage from './AccountsPage'
 import AccountAddPage from './AccountAddPage'
-import DidsPage from './DidsPage'
-import DidShowPage from './DidShowPage'
-import DidCreatePage from './DidCreatePage'
-import DidResolvePage from './DidResolvePage'
-import KeysListPage from './KeysListPage'
-import KeyShowPage from './KeyShowPage'
-import KeyCreatePage from './KeyCreatePage'
+// import DidsPage from './DidsPage'
+// import DidShowPage from './DidShowPage'
+// import DidCreatePage from './DidCreatePage'
+// import DidResolvePage from './DidResolvePage'
+// import KeysListPage from './KeysListPage'
+// import KeyShowPage from './KeyShowPage'
+// import KeyCreatePage from './KeyCreatePage'
 import SettingsPage from './SettingsPage'
 
+const HOMEPAGE = "/Identifications"
+
 const pages = [
+  IdentificationsPage,
+  IdentificationCreatePage,
+  IdentificationShowPage,
   AccountsPage,
   AccountAddPage,
-  DidsPage,
-  DidCreatePage,
-  DidResolvePage,
-  DidShowPage,
-  KeysListPage,
-  KeyCreatePage,
-  KeyShowPage,
+  // DidsPage,
+  // DidCreatePage,
+  // DidResolvePage,
+  // DidShowPage,
+  // KeysListPage,
+  // KeyCreatePage,
+  // KeyShowPage,
   SettingsPage,
 ]
 
@@ -47,7 +55,7 @@ export function CurrentRoute(){
   const routes = [
     {
       path: '/',
-      element: <Navigate replace to="/Dids" />,
+      element: <Navigate replace to={HOMEPAGE} />,
     },
     ...pages.map(Page => ({
       path: pageToPath(Page),

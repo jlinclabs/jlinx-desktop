@@ -2,6 +2,10 @@
 
 Self sovereign identity and data.
 
+## Development
+
+https://electron-react-boilerplate.js.org/docs/adding-dependencies/#module-structure
+
 ## Documents
 
 ### Types

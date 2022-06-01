@@ -69,7 +69,7 @@ function AccountCreateForm(){
 
 function AddAccount({ publicKey }){
   const goToPage = useGoToPage()
-  const command = useCommand('addAccount', true)
+  const command = useCommand('addAccount', [publicKey], true)
 
   React.useEffect(
     () => {

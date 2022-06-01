@@ -34,11 +34,16 @@ export default function BottomNav(props) {
       },
     }}>
       <BottomNavigationAction
+        label="IDs"
+        value="Identifications"
+        icon={<BadgeIcon />}
+      />
+      <BottomNavigationAction
         label="Accounts"
         value="Accounts"
         icon={<SwitchAccountIcon />}
       />
-      <BottomNavigationAction
+      {/* <BottomNavigationAction
         label="DIDs"
         value="Dids"
         icon={<BadgeIcon />}
@@ -47,7 +52,7 @@ export default function BottomNav(props) {
         label="Keys"
         value="KeysList"
         icon={<KeyIcon />}
-      />
+      /> */}
       <BottomNavigationAction
         label="Settings"
         value="Settings"
