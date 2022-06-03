@@ -25,10 +25,11 @@ const jlinx = new JlinxClient({
 
 handleQuery('documents.all', async (...args) => {
   const docs = await jlinx.all()
+  await Promise.all(docs.map(doc => doc.update())) // slow
   return docs.map(doc => {
     return {
       id: doc.id,
-      // length: doc.length,
+      length: doc.length,
       writable: doc.writable,
     }
   })
