@@ -10,6 +10,7 @@ import ListItemAvatar from '@mui/material/ListItemAvatar'
 import Skeleton from '@mui/material/Skeleton'
 import Avatar from '@mui/material/Avatar'
 import Fab from '@mui/material/Fab'
+import TextField from '@mui/material/TextField'
 
 import ImageIcon from '@mui/icons-material/Image'
 import AddIcon from '@mui/icons-material/Add'
@@ -26,7 +27,11 @@ export default function DocumentsPage(){
 
   return <Box sx={{ flexGrow: 1 }}>
     <h1>Documents</h1>
-    <CreateDocumentButton />
+    <Box sx={{ display: 'flex', flexAlign: 'middle' }}>
+      <CreateDocumentButton />
+      &nbsp;
+      <LookupForm />
+    </Box>
     {/* <InspectObject object={query}/> */}
     {query.error && <ErrorAlert error={query.error}/>}
     <DocumentsList {...{
@@ -57,6 +62,33 @@ function CreateDocumentButton(){
     onClick,
     disabled: !command.idle,
   }}>Create</Button>
+}
+
+function LookupForm(){
+  const goToPage = useGoToPage()
+  const inputRef = React.useRef()
+  const onSubmit = React.useCallback(
+    event => {
+      event.preventDefault()
+      const id = inputRef.current.querySelector('input').value
+      goToPage('DocumentShow', { id })
+    },
+    []
+  )
+  return <Box {...{
+    onSubmit,
+    component: 'form',
+    sx: { display: 'flex', flexAlign: 'middle' }
+  }}>
+    <TextField
+      ref={inputRef}
+      sx={{flex: '1 1 auto', mr: 1 }}
+      label="lookup a document by id"
+      // variant="outlined"
+      required
+    />
+    <Button variant="contained" type="submit">Lookup</Button>
+  </Box>
 }
 
 function DocumentsList({ loading, error, documents }){
@@ -95,7 +127,10 @@ function DocumentsListMember({ document }){
         to: toPage('DocumentShow', { id: document.id }),
       },
       primary: `${document.id}`,
-      secondary: `${document.writable ? '[writable]' : ''}`,
+      secondary: (
+        `length=${document.length}` +
+        `${document.writable ? ' (writable)' : ''}`
+      ),
     }}/>
   </ListItem>
 }

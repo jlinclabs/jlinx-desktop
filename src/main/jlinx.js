@@ -16,31 +16,15 @@ const TMP_VAULT_KEY = Buffer.from(
   'hex'
 )
 
-const vault = new JlinxVault({
-  path: Path.join(app.getPath('userData'), 'jlinx.vault'),
-  key: TMP_VAULT_KEY,
-})
-
-const docIds = vault.getSet('docIds')
-
-;(async () => {
-  console.log('TEST docIds')
-
-  await vault.ready()
-  console.log('values', await docIds.values())
-
-})
-
 const jlinx = new JlinxClient({
   hostUrl: 'https://testnet1.jlinx.test',
-  vault,
+  vaultPath: Path.join(app.getPath('userData'), 'jlinx.vault'),
+  vaultKey: TMP_VAULT_KEY
 })
 
 
 handleQuery('documents.all', async (...args) => {
-  const ids = await docIds.toArray()
-  console.log({ ids })
-  const docs = await Promise.all(ids.map(id => jlinx.get(id)))
+  const docs = await jlinx.all()
   return docs.map(doc => {
     return {
       id: doc.id,
@@ -48,16 +32,10 @@ handleQuery('documents.all', async (...args) => {
       writable: doc.writable,
     }
   })
-  // const docs = []
-  // for (const id of ids){
-  //   const doc = await jlinx.get(id)
-  // }
-  // return ids
 })
 
 handleCommand('documents.create', async (...args) => {
   const doc = await jlinx.create()
-  await docIds.add(doc.id)
   return doc.id
 })
 

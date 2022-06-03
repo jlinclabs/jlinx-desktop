@@ -54,60 +54,73 @@ function Document({ doc, refresh }){
   const goToPage = useGoToPage()
 
   const inputRef = React.useRef()
+  const getInput = () => inputRef.current.querySelector('textarea')
   const onSubmit = React.useCallback(
     event => {
       event.preventDefault()
-      const input = inputRef.current.querySelector('input')
-      console.log({ input })
-      console.log({ command })
-      const string = input.value
-
-      // const str = new TextDecoder().decode(byteArray);
+      const string = getInput().value
       const block = new TextEncoder().encode(string).buffer
-      console.log('block as buffer', block)
-      // const buffer = byteArray.buffer;
-      // const encoder = new TextEncoder()
-      // const block = encoder.encode(string).buffer
-
-      console.log('APPEND', doc.id, block)
       command.call({ block }).then(refresh)
-      // const did = input.value
-      // goToPage('DidResolve', { did })
     },
     [goToPage]
   )
 
+  React.useEffect(
+    () => {
+      if (!command.pending && command.resolved){
+        const input = getInput()
+        input.value = ''
+        input.focus()
+      }
+    },
+    [command.pending]
+  )
 
   return <Box>
     <Typography variant="h6"> {`LENGTH=${doc.length}`} </Typography>
-    <ol>
-      {doc.entries.map(entry =>
-        <li><DocumentEntry {...{entry}}/></li>
-      )}
-    </ol>
 
     <Box {...{
       onSubmit,
       component: 'form',
       disabled: command.pending,
-      // sx: { display: 'flex', alignItems: 'center' },
     }}>
-      <TextField
-        ref={inputRef}
-        sx={{flex: '1 1 auto', mr: 1 }}
-        label="entry to append"
-        variant="outlined"
-        required
-      />
+      <TextField {...{
+        ref: inputRef,
+        required: true,
+        multiline: true,
+        sx: {flex: '1 1 auto', mr: 1 },
+        label: 'entry to append',
+        variant: 'outlined',
+        disabled: !!command.pending,
+      }}/>
       <Button variant="contained" type="submit">Append</Button>
     </Box>
+
+    <ul>
+      {doc.entries
+        .map((entry, index) =>
+          <li key={index}>
+            <span>{index}</span>&nbsp;
+            <DocumentEntry {...{id: doc.id, entry, index}}/>
+          </li>
+        )
+        .reverse()
+      }
+    </ul>
 
   </Box>
 }
 
-
-function DocumentEntry({ entry }){
-  console.log('DocumentEntry', { entry })
+const HOST = `https://testnet1.jlinx.test`
+function DocumentEntry({ entry, id, index }){
+  // this transform should be done and cached long before here
   const text = (new TextDecoder).decode(entry)
-  return <span>{text}</span>
+  return <Box {...{
+    sx: {}
+  }}>
+    <Box sx={{
+      whiteSpace: 'pre'
+    }}>{text}</Box>
+    <Link href={`${HOST}/${id}/${index}`}>{HOST}</Link>
+  </Box>
 }
