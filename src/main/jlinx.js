@@ -16,9 +16,12 @@ const TMP_VAULT_KEY = Buffer.from(
   'hex'
 )
 
+const VAULT_NAME = process.env.VAULT_NAME || 'jlinx'
+const VAULT_PATH = Path.join(app.getPath('userData'), `${VAULT_NAME}.vault`)
+
 const jlinx = new JlinxClient({
   hostUrl: 'https://testnet1.jlinx.test',
-  vaultPath: Path.join(app.getPath('userData'), 'jlinx.vault'),
+  vaultPath: VAULT_PATH,
   vaultKey: TMP_VAULT_KEY
 })
 
