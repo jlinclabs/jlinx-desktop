@@ -2,6 +2,7 @@ import * as React from 'react'
 import Paper from '@mui/material/Paper'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import ListItemText from '@mui/material/ListItemText'
@@ -17,51 +18,66 @@ import { toPage, useGoToPage } from './routing'
 import PageHeader from './PageHeader'
 import Link from './Link'
 import ErrorAlert from './ErrorAlert'
-import { useQuery } from './ipc'
+import { useQuery, useCommand } from './ipc'
+import InspectObject from './InspectObject'
 
-export default function IdentificationsPage(){
-  const query = useQuery('getAllIdentifications')
+export default function DocumentsPage(){
+  const query = useQuery('documents.all')
 
   return <Box sx={{ flexGrow: 1 }}>
-    <Fab
-      color="primary"
-      aria-label="add"
-      sx={{ position: 'fixed', bottom: 65, right: 0, m: 1 }}
-      component={Link}
-      to={toPage('IdentificationCreate')}
-    >
-      <AddIcon />
-    </Fab>
-    <PageHeader>IDs</PageHeader>
+    <h1>Documents</h1>
+    <CreateDocumentButton />
+    {/* <InspectObject object={query}/> */}
     {query.error && <ErrorAlert error={query.error}/>}
-    <IdentificationsList {...{
+    <DocumentsList {...{
       loading: query.loading,
-      identifications: query.result,
+      documents: query.result,
     }}/>
   </Box>
 }
 
+function CreateDocumentButton(){
+  const goToPage = useGoToPage()
+  const command = useCommand('documents.create', [], false)
+  React.useEffect(
+    () => {
+      console.log(command)
+      if (command.result) goToPage('DocumentShow', { id: command.result })
+    },
+    [command.state]
+  )
+  const onClick = React.useCallback(
+    () => {
+      if (command.idle) command.call()
+    },
+    [command.state]
+  )
+  return <Button {...{
+    variant: 'contained',
+    onClick,
+    disabled: !command.idle,
+  }}>Create</Button>
+}
 
-function IdentificationsList({ loading, error, identifications }){
-  console.log({ identifications })
+function DocumentsList({ loading, error, documents }){
   return <List sx={{
     width: '100%',
     // bgcolor: 'background.paper',
     // flexGrow: 1,
   }}>
-    {(loading || !identifications)
+    {(loading || !documents)
       ? Array(10).fill().map((_, i) =>
         <Skeleton key={i} animation="wave" height="100px" />
       )
-      : identifications.map(identification =>
-        <IdentificationsListMember {...{key: identification.id, identification}}/>
+      : documents.map(document =>
+        <DocumentsListMember {...{key: document.id, document}}/>
       )
     }
   </List>
 }
 
 
-function IdentificationsListMember({ identification }){
+function DocumentsListMember({ document }){
   return <ListItem>
     <ListItemAvatar>
       <Avatar>
@@ -76,10 +92,10 @@ function IdentificationsListMember({ identification }){
           whiteSpace: 'nowrap',
         },
         component: Link,
-        to: toPage('IdentificationShow', { id: identification.id }),
+        to: toPage('DocumentShow', { id: document.id }),
       },
-      primary: `${identification.id}`,
-      secondary: `created: ${identification.created}`,
+      primary: `${document.id}`,
+      secondary: `${document.writable ? '[writable]' : ''}`,
     }}/>
   </ListItem>
 }

@@ -33,10 +33,13 @@ export function useQuery(queryName, options){
   )
 }
 
-export function useCommand(commandName, args, immediate = false){
+export function useCommand(commandName, options = {}, immediate = false){
   return useAsync(
     useCallback(
-      (...moreArgs) => execCommand(commandName, ...args, ...moreArgs),
+      moreOptions => execCommand(commandName, {
+        ...options,
+        ...moreOptions
+      }),
       [commandName]
     ),
     immediate

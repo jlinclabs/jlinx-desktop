@@ -13,6 +13,8 @@ import {
   useNavigate,
 } from 'react-router-dom'
 
+import DocumentsPage from './DocumentsPage'
+import DocumentShowPage from './DocumentShowPage'
 import IdentificationsPage from './IdentificationsPage'
 import IdentificationCreatePage from './IdentificationCreatePage'
 import IdentificationShowPage from './IdentificationShowPage'
@@ -27,9 +29,11 @@ import AccountAddPage from './AccountAddPage'
 // import KeyCreatePage from './KeyCreatePage'
 import SettingsPage from './SettingsPage'
 
-const HOMEPAGE = "/Identifications"
+const HOMEPAGE = "/Documents"
 
 const pages = [
+  DocumentsPage,
+  DocumentShowPage,
   IdentificationsPage,
   IdentificationCreatePage,
   IdentificationShowPage,

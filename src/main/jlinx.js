@@ -1,10 +1,14 @@
+const Debug = require('debug')
 const Path = require('path')
+const b4a = require('b4a')
 const { app } = require('electron')
 const { handleQuery, handleCommand } = require('./ipc')
 const JlinxClient = require('jlinx-client')
 const JlinxVault = require('jlinx-vault')
-const KeyStore = require('jlinx-vault/key-store')
-const JlinxIdentification = require('jlinx-identification')
+// const KeyStore = require('jlinx-vault/key-store')
+// const JlinxIdentification = require('jlinx-identification')
+
+const debug = Debug('desktop:main:jlinx')
 
 // TODO generate at init and ask for from user
 const TMP_VAULT_KEY = Buffer.from(
@@ -17,46 +21,92 @@ const vault = new JlinxVault({
   key: TMP_VAULT_KEY,
 })
 
-const keys = new KeyStore(vault)
+const docIds = vault.getSet('docIds')
 
+;(async () => {
+  console.log('TEST docIds')
 
-
-
-handleCommand('keys.create', async (...args) => {
-  await keys.ready()
-  return await keys.create(...args)
-})
-
-handleQuery('keys.sign', async (...args) => {
-  await keys.ready()
-  return await keys.sign(...args)
-})
-
-handleQuery('keys.verify', async (...args) => {
-  await keys.ready()
-  return await keys.verify(...args)
-})
-
-handleCommand('jlinx.create', async (...args) => {
+  await vault.ready()
+  console.log('values', await docIds.values())
 
 })
 
-handleQuery('jlinx.getLength', async (...args) => {
-
+const jlinx = new JlinxClient({
+  hostUrl: 'https://testnet1.jlinx.test',
+  vault,
 })
 
-handleQuery('jlinx.getEntry', async (...args) => {
 
+handleQuery('documents.all', async (...args) => {
+  const ids = await docIds.toArray()
+  console.log({ ids })
+  const docs = await Promise.all(ids.map(id => jlinx.get(id)))
+  return docs.map(doc => {
+    return {
+      id: doc.id,
+      // length: doc.length,
+      writable: doc.writable,
+    }
+  })
+  // const docs = []
+  // for (const id of ids){
+  //   const doc = await jlinx.get(id)
+  // }
+  // return ids
 })
 
-handleCommand('jlinx.append', async (...args) => {
-
+handleCommand('documents.create', async (...args) => {
+  const doc = await jlinx.create()
+  await docIds.add(doc.id)
+  return doc.id
 })
 
-// const jlinx = new JlinxClient({
-//   hostUrl: 'https://testnet1.jlinx.test',
-//   keys,
+
+handleQuery('documents.get', async (id) => {
+  const doc = await jlinx.get(id)
+  await doc.ready()
+  return {
+    id,
+    length: doc.length,
+    writable: doc.writable,
+    value: await doc.value(),
+    entries: await doc.all(),
+  }
+})
+
+handleCommand('documents.append', async ({id, block}) => {
+  const buffer = b4a.from(block)
+  debug('documents.append', { id, block, buffer })
+  const doc = await jlinx.get(id)
+  debug('documents.append', { doc })
+  debug('documents.append', doc.ownerSigningKeys)
+  await doc.ready()
+  await doc.append([buffer])
+  return { length: doc.length }
+})
+
+
+// handleCommand('jlinx.create', async (...args) => {
+//   await jlinx.ready()
+//   return await jlinx.create(...args)
 // })
+
+// handleQuery('jlinx.getLength', async (...args) => {
+//   await jlinx.ready()
+//   return await jlinx.getLength(...args)
+// })
+
+// handleQuery('jlinx.getEntry', async (...args) => {
+//   await jlinx.ready()
+//   return await jlinx.getEntry(...args)
+// })
+
+// handleCommand('jlinx.append', async (...args) => {
+//   await jlinx.ready()
+//   return await jlinx.append(...args)
+// })
+
+
 
 // // const identifications = new JlinxIdentifications(jlinx)
 // // // TMP using vault for all persistance for now
@@ -92,17 +142,17 @@ handleCommand('jlinx.append', async (...args) => {
 //   return status
 // })
 
-// handleQuery('getAllIdentifications', async () => {
-//   const ids = await identifications.getIds()
-//   console.log('getAllIdentifications', { ids })
-//   const docs = await Promise.all(
-//     ids.map(async id => {
-//       const doc = await jlinx.get(id)
-//       const ident = new JlinxIdentification(doc)
-//       return ident.value()
-//     })
-//   )
-// })
+handleQuery('getAllIdentifications', async () => {
+  // const ids = await identifications.getIds()
+  // console.log('getAllIdentifications', { ids })
+  // const docs = await Promise.all(
+  //   ids.map(async id => {
+  //     const doc = await jlinx.get(id)
+  //     const ident = new JlinxIdentification(doc)
+  //     return ident.value()
+  //   })
+  // )
+})
 
 // handleCommand('createIdentification', async () => {
 //   const doc = await jlinx.create()
@@ -204,4 +254,21 @@ handleCommand('jlinx.append', async (...args) => {
 
 //   // return await jlinx.accounts.add(...args)
 //   return {id: 'fake_account_id'}
+// // })
+
+
+
+// handleCommand('keys.create', async (...args) => {
+//   await keys.ready()
+//   return await keys.create(...args)
+// })
+
+// handleQuery('keys.sign', async (...args) => {
+//   await keys.ready()
+//   return await keys.sign(...args)
+// })
+
+// handleQuery('keys.verify', async (...args) => {
+//   await keys.ready()
+//   return await keys.verify(...args)
 // })

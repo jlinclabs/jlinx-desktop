@@ -43,6 +43,11 @@ export default function BottomNav(props) {
         value="Accounts"
         icon={<SwitchAccountIcon />}
       />
+      <BottomNavigationAction
+        label="Documents"
+        value="Documents"
+        icon={<SwitchAccountIcon />}
+      />
       {/* <BottomNavigationAction
         label="DIDs"
         value="Dids"

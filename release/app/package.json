@@ -14,6 +14,7 @@
     "postinstall": "npm run electron-rebuild && npm run link-modules"
   },
   "dependencies": {
+    "b4a": "^1.5.3",
     "jlinx-client": "github:jlinclabs/jlinx-client",
     "jlinx-identification": "github:jlinclabs/jlinx-identification",
     "jlinx-vault": "github:jlinclabs/jlinx-vault"
