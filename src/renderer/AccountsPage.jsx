@@ -80,6 +80,8 @@ function AccountsListMember({ account, reload }){
     },
     [id]
   )
+
+  const createdAt = new Date(account.createdAt)
   return <ListItem {...{
     secondaryAction: (
       <IconButton edge="end" aria-label="delete" {...{onClick}}>
@@ -102,7 +104,7 @@ function AccountsListMember({ account, reload }){
         to: toPage('AccountShow', { id: account.id }),
       },
       primary: `${account.host}`,
-      secondary: `created: ${account.identifier}`,
+      secondary: `created: ${createdAt.toLocaleDateString()}`,
     }}/>
   </ListItem>
 }

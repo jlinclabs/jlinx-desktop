@@ -1,6 +1,8 @@
 import * as React from 'react'
 import { useCallback } from 'react'
 
+import { handleCommand } from './ipc'
+
 import {
   MemoryRouter as Router,
   Routes as ReactRouterRoutes,
@@ -100,6 +102,10 @@ export function useGoToPage(){
   )
 }
 
+handleCommand('location.set', ({ location }) => {
+  console.log('CMD: location.set', location)
+  window.location = location
+})
 
 function paramsToSearch(params){
   const search = new URLSearchParams()

@@ -1,5 +1,5 @@
 const Path = require('path')
-const { app, ipcMain } = require('electron')
+const { app, ipcMain, BrowserWindow } = require('electron')
 
 const queries = {}
 const commands = {}
@@ -37,6 +37,14 @@ function handleCommand(commandName, handler){
   commands[commandName] = handler
 }
 
+function execCommand(commandName, options){
+  const window = getAllWindows.getFocusedWindow()
+  window.webContents.send('execCommand', options)
+}
+
+handleCommand('ping', ({ id }) => {
+  return { pong: id }
+})
 
 handleQuery('__inspect', () => {
   return {
@@ -48,4 +56,5 @@ handleQuery('__inspect', () => {
 module.exports = {
   handleQuery,
   handleCommand,
+  execCommand,
 }

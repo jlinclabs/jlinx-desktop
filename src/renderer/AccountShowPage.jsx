@@ -54,9 +54,39 @@ function ReviewAccount({ id }){
 
 
 function Account({ account }){
+  const { id } = account
+  const deleteCommand = useCommand('accounts.login', { id })
+  const loginCommand = useCommand('accounts.login', { id })
+  const onDelete = React.useCallback(
+    () => {
+
+    },
+    []
+  )
+  const onLogin = React.useCallback(
+    () => {
+
+    },
+    []
+  )
   return <Box {...{
-    sx: { m: 1 },
+    sx: {
+      m: 1,
+      backgroundColor: 'background.paper',
+    },
   }}>
     <InspectObject object={account} />
+    <p>
+      <Button
+        disabled={!deleteCommand.idle}
+        variant="text"
+        onClick={onDelete}
+      >delete</Button>
+      <Button
+        disabled={!loginCommand.idle}
+        variant="contained"
+        onClick={onLogin}
+      >Login</Button>
+    </p>
   </Box>
 }

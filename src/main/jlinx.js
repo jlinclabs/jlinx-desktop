@@ -1,3 +1,4 @@
+const { Notification } = require('electron')
 const Debug = require('debug')
 const { URL } = require('url')
 const Path = require('path')
@@ -28,6 +29,25 @@ const jlinx = new JlinxClient({
 })
 
 const appAccounts = jlinx.vault.recordStore('appAccounts')
+
+// watch for changes to app accounts
+// if a signing reqest event comes in
+//
+// appAccounts.on('change')
+setTimeout(
+  () => {
+    const notification = new Notification({
+      title: 'New App Login Request',
+      body: `https://example.com as @username?`,
+    })
+    notification.show()
+    notification.on('click', () => {
+
+    })
+    console.log({ notification })
+  },
+  2000
+)
 
 handleQuery('documents.all', async (...args) => {
   const docs = await jlinx.all()
@@ -75,7 +95,6 @@ handleCommand('documents.append', async ({id, block}) => {
   await doc.append([buffer])
   return { length: doc.length }
 })
-
 
 handleQuery('accounts.all', async () => {
   const ids = await appAccounts.ids()
