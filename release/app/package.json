@@ -17,7 +17,8 @@
     "b4a": "^1.5.3",
     "jlinx-client": "github:jlinclabs/jlinx-client",
     "jlinx-identification": "github:jlinclabs/jlinx-identification",
-    "jlinx-vault": "github:jlinclabs/jlinx-vault"
+    "jlinx-vault": "github:jlinclabs/jlinx-vault",
+    "node-fetch": "^3.2.5"
   },
   "license": "MIT"
 }

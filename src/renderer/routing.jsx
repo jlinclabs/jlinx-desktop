@@ -20,6 +20,7 @@ import IdentificationCreatePage from './IdentificationCreatePage'
 import IdentificationShowPage from './IdentificationShowPage'
 import AccountsPage from './AccountsPage'
 import AccountAddPage from './AccountAddPage'
+import AccountShowPage from './AccountShowPage'
 // import DidsPage from './DidsPage'
 // import DidShowPage from './DidShowPage'
 // import DidCreatePage from './DidCreatePage'
@@ -39,6 +40,7 @@ const pages = [
   IdentificationShowPage,
   AccountsPage,
   AccountAddPage,
+  AccountShowPage,
   // DidsPage,
   // DidCreatePage,
   // DidResolvePage,

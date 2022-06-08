@@ -1,17 +1,28 @@
 import * as React from 'react'
 import { useRef, useState, useCallback, useEffect } from 'react'
+import useForceUpdate from './useForceUpdate'
 
 const STATES = ['idle', 'pending', 'resolved', 'rejected']
 export default function useAsync(asyncFunction, immediate = true){
-  const [state, setState] = useState(0)
+  const forceUpdate = useForceUpdate()
   const ctx = useRef()
-  ctx.state = STATES[state]
-  STATES.forEach((name, index) => { ctx[name] = index === state })
+
+  const setState = state => {
+    ctx.state = STATES[state]
+    STATES.forEach((name, index) => {
+      ctx[name] = index === state
+    })
+    forceUpdate()
+  }
+
+  if (ctx.state === undefined) setState(0)
 
   ctx.call = useCallback(
     options => {
       if (ctx.promise) throw new Error(`already executing`)
-      ctx.promise = asyncFunction(options).then(
+      ctx.promise = new Promise((resolve, reject) => {
+        asyncFunction(options).then(resolve, reject)
+      }).then(
         result => {
           delete ctx.promise
           ctx.result = result
@@ -30,8 +41,8 @@ export default function useAsync(asyncFunction, immediate = true){
   )
 
   useEffect(
-    () => { if (immediate && state === 0) ctx.call() },
-    [ctx.call, immediate, state]
+    () => { if (immediate && ctx.state === STATES['0']) ctx.call() },
+    [ctx.call, immediate, ctx.state]
   )
 
   return ctx

@@ -9,18 +9,23 @@ import ListItemAvatar from '@mui/material/ListItemAvatar'
 import Skeleton from '@mui/material/Skeleton'
 import Avatar from '@mui/material/Avatar'
 import Fab from '@mui/material/Fab'
+import IconButton from '@mui/material/IconButton';
 
 import ImageIcon from '@mui/icons-material/Image'
 import AddIcon from '@mui/icons-material/Add'
+import DeleteIcon from '@mui/icons-material/Delete';
 
 import { toPage } from './routing'
 import PageHeader from './PageHeader'
 import Link from './Link'
 import ErrorAlert from './ErrorAlert'
-import { useQuery } from './ipc'
+import { useQuery, useCommand } from './ipc'
+import InspectObject from './InspectObject'
 
 export default function AccountsPage(){
-  const query = useQuery('getAllAccounts')
+  const query = useQuery('accounts.all')
+
+  const reload = query.call
 
   return <Box sx={{ flexGrow: 1 }}>
     <Fab
@@ -37,12 +42,13 @@ export default function AccountsPage(){
     <AccountsList {...{
       loading: query.loading,
       accounts: query.result,
+      reload,
     }}/>
   </Box>
 }
 
 
-function AccountsList({ loading, error, accounts }){
+function AccountsList({ loading, error, accounts, reload }){
   return <List sx={{
     width: '100%',
     // bgcolor: 'background.paper',
@@ -53,33 +59,50 @@ function AccountsList({ loading, error, accounts }){
         <Skeleton key={i} animation="wave" height="100px" />
       )
       : accounts.map(account =>
-        <AccountsListMember {...{key: account.id, account}}/>
+        <AccountsListMember {...{
+          key: account.id, account, reload
+        }}/>
       )
     }
   </List>
 }
 
 
-function AccountsListMember({ account }){
-  return <ListItem>
+function AccountsListMember({ account, reload }){
+  const id = account.id
+  const command = useCommand('accounts.delete', { id })
+  const onClick = React.useCallback(
+    () => {
+      const confirmed = confirm(
+        `Are you sure you want to delete this account?`
+      )
+      if (confirmed) command.call().then(() => { reload() })
+    },
+    [id]
+  )
+  return <ListItem {...{
+    secondaryAction: (
+      <IconButton edge="end" aria-label="delete" {...{onClick}}>
+        <DeleteIcon />
+      </IconButton>
+    ),
+  }}>
     <ListItemAvatar>
       <Avatar>
         <ImageIcon />
       </Avatar>
     </ListItemAvatar>
-
-    {/* <ListItemText {...{
+    <ListItemText {...{
       primaryTypographyProps: {
         sx: {
           fontFamily: 'monospace',
           whiteSpace: 'nowrap',
         },
         component: Link,
-        to: toPage('DidShow', { did }),
+        to: toPage('AccountShow', { id: account.id }),
       },
-      primary: `${didDocument.id}`,
-      secondary: `created: ${didDocument.created}`,
-    }}/> */}
-    <InspectObject object={account}/>
+      primary: `${account.host}`,
+      secondary: `created: ${account.identifier}`,
+    }}/>
   </ListItem>
 }

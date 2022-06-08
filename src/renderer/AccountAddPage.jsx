@@ -24,15 +24,16 @@ import ErrorAlert from './ErrorAlert'
 import InspectObject from './InspectObject'
 
 export default function AccountAddPage(props){
-  const { publicKey } = props.params
+  console.log('AccountAddPage', props.params)
+  const { id } = props.params
 
   // const query = useQuery('getAllAccounts')
 
   return <Box sx={{ flexGrow: 1 }}>
-    <PageHeader>Create Account</PageHeader>
+    <PageHeader>Add App Account</PageHeader>
     {/* {query.error && <ErrorAlert error={query.error}/>} */}
-    {publicKey
-      ? <AddAccount {...{ publicKey }}/>
+    {id
+      ? <ReviewAccount {...{ id }}/>
       : <AccountCreateForm {...{}}/>
     }
   </Box>
@@ -45,8 +46,8 @@ function AccountCreateForm(){
     event => {
       event.preventDefault()
       const input = inputRef.current.querySelector('input')
-      const publicKey = input.value
-      goToPage('AccountAdd', { publicKey })
+      const id = input.value
+      goToPage('AccountAdd', { id })
     },
     [goToPage]
   )
@@ -67,32 +68,57 @@ function AccountCreateForm(){
   </Box>
 }
 
-function AddAccount({ publicKey }){
-  const goToPage = useGoToPage()
-  const command = useCommand('addAccount', [publicKey], true)
-
-  React.useEffect(
-    () => {
-      if (!command.resolved) return
-      console.log('ADDED ACCOUNT', command.result)
-      goToPage('Accounts', {
-        focus: command.result.id
-      })
-    },
-    [goToPage, command.state]
-  )
+function ReviewAccount({ id }){
+  const query = useQuery('accounts.review', { id })
   return <Box {...{
     sx: { m: 1 },
   }}>
     {
-      command.error
-        ? <Alert severity="error">{`${command.error}`}</Alert> :
-      command.resolved
-        ? <div>
-          <span>{`added: ${publicKey}`}</span>
-          <InspectObject object={command.result} />
-        </div> :
-      <span>{`adding: ${publicKey}`}</span>
+      query.error
+        ? <Alert severity="error">{`${query.error}`}</Alert> :
+      query.resolved
+        ? <AccountForReview account={query.result}/> :
+      // else
+        <span>{`looking up: ${id}`}</span>
     }
+  </Box>
+}
+
+
+function AccountForReview({ account }){
+  const goToPage = useGoToPage()
+  const command = useCommand('accounts.add', { id: account.id })
+  const addAccount = React.useCallback(
+    () => { command.call() },
+    [command]
+  )
+  React.useEffect(
+    () => {
+      if (command.result){
+        console.log(command)
+        const { id } = command.result
+        goToPage('Accounts', { id })
+      }
+    },
+    [command.result]
+  )
+  return <Box {...{
+    sx: { m: 1 },
+  }}>
+    <InspectObject object={account} />
+    <InspectObject object={command.result} />
+    <p>
+      <Button
+        disabled={!command.idle}
+        variant="contained"
+        component={Link}
+        to="/Accounts"
+      >cancel</Button>
+      <Button
+        disabled={!command.idle}
+        variant="contained"
+        onClick={addAccount}
+      >Add</Button>
+    </p>
   </Box>
 }

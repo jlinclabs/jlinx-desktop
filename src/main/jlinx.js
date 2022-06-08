@@ -1,14 +1,16 @@
 const Debug = require('debug')
+const { URL } = require('url')
 const Path = require('path')
 const b4a = require('b4a')
 const { app } = require('electron')
 const { handleQuery, handleCommand } = require('./ipc')
 const JlinxClient = require('jlinx-client')
-const JlinxVault = require('jlinx-vault')
+const { now, createRandomString } = require('jlinx-util')
+// const JlinxVault = require('jlinx-vault')
 // const KeyStore = require('jlinx-vault/key-store')
 // const JlinxIdentification = require('jlinx-identification')
 
-const debug = Debug('desktop:main:jlinx')
+const debug = Debug('jlinx:desktop:main')
 
 // TODO generate at init and ask for from user
 const TMP_VAULT_KEY = Buffer.from(
@@ -25,6 +27,7 @@ const jlinx = new JlinxClient({
   vaultKey: TMP_VAULT_KEY
 })
 
+const appAccounts = jlinx.vault.recordStore('appAccounts')
 
 handleQuery('documents.all', async (...args) => {
   const docs = await jlinx.all()
@@ -56,6 +59,12 @@ handleQuery('documents.get', async (id) => {
   }
 })
 
+handleQuery('documents.change', async (id) => {
+  const doc = await jlinx.get(id)
+  await doc.waitForUpdate()
+})
+
+
 handleCommand('documents.append', async ({id, block}) => {
   const buffer = b4a.from(block)
   debug('documents.append', { id, block, buffer })
@@ -67,6 +76,88 @@ handleCommand('documents.append', async ({id, block}) => {
   return { length: doc.length }
 })
 
+
+handleQuery('accounts.all', async () => {
+  const ids = await appAccounts.ids()
+  console.log({ ids })
+  return await appAccounts.all()
+})
+
+handleQuery('accounts.get', async ({ id }) => {
+  return await appAccounts.get(id)
+})
+
+handleQuery('accounts.review', async ({ id }) => {
+  debug('accounts.review', { id })
+  const doc = await jlinx.get(id)
+  debug('accounts.review', { doc })
+  const headerJson = await doc.get(0)
+  debug('accounts.review',
+    headerJson
+  )
+  const header = await doc.getJson(0)
+  debug('accounts.review', { header })
+  const { followupUrl } = header
+  return {...header, id}
+})
+
+handleCommand('accounts.add', async ({ id }) => {
+  debug('accounts.add', { id })
+  const appUser = await jlinx.get(id)
+  debug('accounts.add', { appUser })
+  const appUserE1 = await appUser.getJson(0)
+  debug('accounts.add', { appUserE1 })
+  const { followupUrl, signupSecret } = appUserE1
+
+  const host = new URL(followupUrl).host
+
+  // create our AppAccount document
+  const appAccountDoc = await jlinx.createAppAccount({
+    host,
+    appUser: id,
+    signupSecret,
+  })
+
+  const appAccount = {
+    id: appAccountDoc.id,
+    appUser: id,
+    host,
+    createdAt: now(),
+  }
+
+  const appUserUpdated = appUser.waitForUpdate()
+
+  // post AppAccount.id to followupUrl
+  const response = await fetch(followupUrl, {
+    method: 'post',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json'
+    },
+    body: JSON.stringify({
+      appUserId: id,
+      appAccountId: appAccountDoc.id,
+      signupSecret
+    })
+  })
+  debug({ response })
+  debug(await response.json())
+
+  await appUserUpdated
+  await appUser.update()
+  console.log({ appUser })
+  const appUserE2 = await appUser.getJson(1)
+  debug('accounts.add', { appUserE2 })
+
+  // persist id and other data
+  await appAccounts.put(appAccount.id, appAccount)
+
+  return appAccount
+})
+
+handleCommand('accounts.delete', async ({ id }) => {
+  return await appAccounts.delete(id)
+})
 
 // handleCommand('jlinx.create', async (...args) => {
 //   await jlinx.ready()
@@ -254,3 +345,22 @@ handleQuery('getAllIdentifications', async () => {
 //   await keys.ready()
 //   return await keys.verify(...args)
 // })
+
+
+
+
+async function fetch (url, options = {}) {
+  const { default: fetch } = await import('node-fetch')
+  debug('fetch req', { url, options })
+  const response = await fetch(url, options)
+  if (response.status >= 400) {
+    debug('fetch failed', {
+      url,
+      status: response.status,
+      statusText: response.statusText
+    })
+    throw new Error(`request failed url="${url}"`)
+  }
+  debug('fetch res', { url, options, status: response.status })
+  return response
+}

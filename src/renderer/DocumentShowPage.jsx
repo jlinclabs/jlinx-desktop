@@ -25,15 +25,27 @@ import InspectObject from './InspectObject'
 export default function DocumentShowPage(props){
   console.log({props})
   const { id } = props.params
-  const query = useQuery('documents.get', id)
-  const doc = query.result
+  const docQuery = useQuery('documents.get', id)
+  const doc = docQuery.result
   const refresh = React.useCallback(
-    () => { query.call() },
-    [query]
+    () => { if (!docQuery.pending) docQuery.call() },
+    [docQuery]
+  )
+  const changeQuery = useQuery('documents.change', id)
+  React.useEffect(
+    () => {
+      if (changeQuery.resolved){
+        console.log('docQuery.state', docQuery.state)
+        refresh()
+        changeQuery.call()
+      }
+    },
+    [changeQuery.state]
   )
   return <Box sx={{ flexGrow: 1 }}>
     <h1>{id}</h1>
-    {query.error && <ErrorAlert error={query.error}/>}
+    {docQuery.error && <ErrorAlert error={docQuery.error}/>}
+    {changeQuery.error && <ErrorAlert error={changeQuery.error}/>}
     { doc && <Document {...{ doc, refresh }} />}
   </Box>
 }
@@ -44,8 +56,6 @@ function stringToArrayBuffer( string, encoding, callback ) {
   reader.onload = function(evt){callback(evt.target.result);};
   reader.readAsArrayBuffer(blob);
 }
-
-
 
 function Document({ doc, refresh }){
   console.log({ doc })
@@ -78,6 +88,7 @@ function Document({ doc, refresh }){
 
   return <Box>
     <Typography variant="h6"> {`LENGTH=${doc.length}`} </Typography>
+    <Typography variant="h6"> {`WRITABLE=${doc.writable}`} </Typography>
 
     <Box {...{
       onSubmit,
