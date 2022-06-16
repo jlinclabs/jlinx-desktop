@@ -11,6 +11,12 @@ import Skeleton from '@mui/material/Skeleton'
 import Avatar from '@mui/material/Avatar'
 import Fab from '@mui/material/Fab'
 import TextField from '@mui/material/TextField'
+import Box from '@mui/material/Box'
+import InputLabel from '@mui/material/InputLabel'
+import MenuItem from '@mui/material/MenuItem'
+import FormControl from '@mui/material/FormControl'
+import Select from '@mui/material/Select'
+
 
 import ImageIcon from '@mui/icons-material/Image'
 import AddIcon from '@mui/icons-material/Add'
@@ -27,9 +33,10 @@ export default function DocumentsPage(){
 
   return <Box sx={{ flexGrow: 1 }}>
     <h1>Documents</h1>
-    <Box sx={{ display: 'flex', flexAlign: 'middle' }}>
+    <Box sx={{ m: 2 }}>
       <CreateDocumentButton />
-      &nbsp;
+    </Box>
+    <Box sx={{ m: 2 }}>
       <LookupForm />
     </Box>
     {/* <InspectObject object={query}/> */}
@@ -43,25 +50,45 @@ export default function DocumentsPage(){
 
 function CreateDocumentButton(){
   const goToPage = useGoToPage()
-  const command = useCommand('documents.create', [], false)
+  const [docType, setDocType] = React.useState('Ledger')
+  const command = useCommand('documents.create', {}, false)
   React.useEffect(
     () => {
-      console.log(command)
+      console.log('CREATED NEW DOC', command)
       if (command.result) goToPage('DocumentShow', { id: command.result })
     },
     [command.state]
   )
   const onClick = React.useCallback(
     () => {
-      if (command.idle) command.call()
+      if (command.idle) command.call({ docType })
     },
-    [command.state]
+    [command.state, docType]
   )
-  return <Button {...{
-    variant: 'contained',
-    onClick,
-    disabled: !command.idle,
-  }}>Create</Button>
+  return <Box {...{
+    sx: { display: 'flex', flexAlign: 'middle' }
+  }}>
+    <FormControl>
+      <InputLabel id="demo-simple-select-label">Doc Type</InputLabel>
+      <Select
+        labelId="demo-simple-select-label"
+        id="demo-simple-select"
+        value={docType}
+        label="Doc Type"
+        onChange={e => { setDocType(e.target.value) }}
+      >
+        <MenuItem value="Raw">Raw</MenuItem>
+        <MenuItem value="Ledger">Ledger</MenuItem>
+        <MenuItem value="File">File</MenuItem>
+      </Select>
+    </FormControl>
+    &nbsp;
+    <Button {...{
+      variant: 'contained',
+      onClick,
+      disabled: !command.idle,
+    }}>Create</Button>
+  </Box>
 }
 
 function LookupForm(){
@@ -101,9 +128,11 @@ function DocumentsList({ loading, error, documents }){
       ? Array(10).fill().map((_, i) =>
         <Skeleton key={i} animation="wave" height="100px" />
       )
-      : documents.map(document =>
-        <DocumentsListMember {...{key: document.id, document}}/>
-      )
+      : documents
+        .map(document =>
+          <DocumentsListMember {...{key: document.id, document}}/>
+        )
+        .reverse()
     }
   </List>
 }

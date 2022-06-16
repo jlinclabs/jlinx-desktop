@@ -84,21 +84,24 @@ handleQuery('documents.all', async (...args) => {
   })
 })
 
-handleCommand('documents.create', async (...args) => {
-  const doc = await jlinx.create()
+handleCommand('documents.create', async (opts) => {
+  const doc = await jlinx.create(opts)
+  debug('WTF PANDS', doc.id, doc)
   return doc.id
 })
-
 
 handleQuery('documents.get', async (id) => {
   const doc = await jlinx.get(id)
   await doc.ready()
+  debug('documents.get', doc)
   return {
     id,
+    docType: doc.docType,
     length: doc.length,
     writable: doc.writable,
+    contentType: doc.contentType,
     value: await doc.value(),
-    entries: await doc.all(),
+    // entries: await doc.all(),
   }
 })
 
@@ -109,13 +112,17 @@ handleQuery('documents.change', async (id) => {
 
 
 handleCommand('documents.append', async ({id, block}) => {
-  const buffer = b4a.from(block)
-  debug('documents.append', { id, block, buffer })
+  debug('documents.append', { id, block })
   const doc = await jlinx.get(id)
   debug('documents.append', { doc })
   debug('documents.append', doc.ownerSigningKeys)
   await doc.ready()
-  await doc.append([buffer])
+  if (doc.contentType === 'application/json'){
+    doc.append([block])
+  } else{
+    const buffer = b4a.from(block)
+    await doc.append([buffer])
+  }
   return { length: doc.length }
 })
 

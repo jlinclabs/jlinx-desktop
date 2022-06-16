@@ -22,8 +22,10 @@ import ErrorAlert from './ErrorAlert'
 import { useQuery, useCommand } from './ipc'
 import InspectObject from './InspectObject'
 
+const HOST = `https://testnet1.jlinx.test`
+
+
 export default function DocumentShowPage(props){
-  console.log({props})
   const { id } = props.params
   const docQuery = useQuery('documents.get', id)
   const doc = docQuery.result
@@ -42,8 +44,14 @@ export default function DocumentShowPage(props){
     },
     [changeQuery.state]
   )
+  const url = `${HOST}/${id}`
   return <Box sx={{ flexGrow: 1 }}>
-    <h1>{id}</h1>
+    <Typography
+      variant="h4"
+      sx={{ whiteSpace: 'no-wrap' }}
+    >
+      <Link href={url}>{id}</Link>
+    </Typography>
     {docQuery.error && <ErrorAlert error={docQuery.error}/>}
     {changeQuery.error && <ErrorAlert error={changeQuery.error}/>}
     { doc && <Document {...{ doc, refresh }} />}
@@ -69,7 +77,17 @@ function Document({ doc, refresh }){
     event => {
       event.preventDefault()
       const string = getInput().value
-      const block = new TextEncoder().encode(string).buffer
+      let block
+      if (doc.contentType === 'application/json'){
+        try{
+          block = JSON.parse(string)
+        }catch(error){
+          alert(`json is invalid`)
+          return
+        }
+      }else{
+        block = new TextEncoder().encode(string).buffer
+      }
       command.call({ block }).then(refresh)
     },
     [goToPage]
@@ -86,14 +104,22 @@ function Document({ doc, refresh }){
     [command.pending]
   )
 
-  return <Box>
-    <Typography variant="h6"> {`LENGTH=${doc.length}`} </Typography>
-    <Typography variant="h6"> {`WRITABLE=${doc.writable}`} </Typography>
+  return <Box sx={{p: 2}}>
+    <InspectObject object={{
+      length: doc.length,
+      writable: doc.writable,
+      docType: doc.docType,
+      contentType: doc.contentType,
+    }}/>
 
     <Box {...{
       onSubmit,
       component: 'form',
       disabled: command.pending,
+      sx: {
+        display: 'flex',
+        flexDirection: 'row'
+      }
     }}>
       <TextField {...{
         ref: inputRef,
@@ -108,11 +134,11 @@ function Document({ doc, refresh }){
     </Box>
 
     <ul>
-      {doc.entries
+      {doc.value
         .map((entry, index) =>
           <li key={index}>
             <span>{index}</span>&nbsp;
-            <DocumentEntry {...{id: doc.id, entry, index}}/>
+            <DocumentEntry {...{docType: doc.type, id: doc.id, entry, index}}/>
           </li>
         )
         .reverse()
@@ -122,16 +148,21 @@ function Document({ doc, refresh }){
   </Box>
 }
 
-const HOST = `https://testnet1.jlinx.test`
-function DocumentEntry({ entry, id, index }){
+function DocumentEntry({ docType, entry, id, index }){
   // this transform should be done and cached long before here
-  const text = (new TextDecoder).decode(entry)
+  // if (docType === 'raw')
+  // const text = (new TextDecoder).decode(entry)
+  let text
+  if (typeof entry === 'string') text = `${entry}`
+  else if (typeof entry === 'object') text = JSON.stringify(entry)
+
+  const url = `${HOST}/${id}/${index}`
   return <Box {...{
     sx: {}
   }}>
     <Box sx={{
       whiteSpace: 'pre'
     }}>{text}</Box>
-    <Link href={`${HOST}/${id}/${index}`}>{HOST}</Link>
+    <Link href={url}>{url}</Link>
   </Box>
 }
