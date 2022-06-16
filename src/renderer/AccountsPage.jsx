@@ -20,6 +20,7 @@ import PageHeader from './PageHeader'
 import Link from './Link'
 import ErrorAlert from './ErrorAlert'
 import { useQuery, useCommand } from './ipc'
+import Timestamp from './Timestamp'
 import InspectObject from './InspectObject'
 
 export default function AccountsPage(){
@@ -104,7 +105,9 @@ function AccountsListMember({ account, reload }){
         to: toPage('AccountShow', { id: account.id }),
       },
       primary: `${account.host}`,
-      secondary: `created: ${createdAt.toLocaleDateString()}`,
+      secondary: <span>
+        created <Timestamp at={account.createdAt}/>
+      </span>
     }}/>
   </ListItem>
 }

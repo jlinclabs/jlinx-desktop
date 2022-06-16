@@ -1,4 +1,4 @@
-const { Notification } = require('electron')
+const { Notification, BrowserWindow, ipcMain } = require('electron')
 const Debug = require('debug')
 const { URL } = require('url')
 const Path = require('path')
@@ -7,6 +7,7 @@ const { app } = require('electron')
 const { handleQuery, handleCommand } = require('./ipc')
 const JlinxClient = require('jlinx-client')
 const { now, createRandomString } = require('jlinx-util')
+const LoginRequestHandler = require('./LoginRequestHandler')
 // const JlinxVault = require('jlinx-vault')
 // const KeyStore = require('jlinx-vault/key-store')
 // const JlinxIdentification = require('jlinx-identification')
@@ -30,24 +31,46 @@ const jlinx = new JlinxClient({
 
 const appAccounts = jlinx.vault.recordStore('appAccounts')
 
-// watch for changes to app accounts
-// if a signing reqest event comes in
-//
-// appAccounts.on('change')
-setTimeout(
-  () => {
+const loginRequests = new LoginRequestHandler({
+  jlinx,
+  appAccounts,
+  onLoginRequest(loginRequest){
+    console.log('NEW LOGIN REQ', loginRequest)
+
     const notification = new Notification({
+      // icon // TODO jlinx icon
       title: 'New App Login Request',
-      body: `https://example.com as @username?`,
+      body: `${loginRequest.host}`,
+    })
+    notification.on('click', () => {
+      console.log('NOTIFICATION CLICKED')
+      windows = BrowserWindow.getAllWindows()
+      win = windows[0]
+      // console.log({win})
+      win.webContents.send('gotoPage', {
+        pageName: 'LoginRequests',
+        params: { id: loginRequest.id }
+      })
+      win.show()
     })
     notification.show()
-    notification.on('click', () => {
-
-    })
     console.log({ notification })
-  },
-  2000
-)
+
+    setTimeout(
+      () => {
+        // dont garbage collect me
+        console.log({ notification })
+      },
+      1000 * 60
+    )
+
+  }
+})
+
+
+handleQuery('loginRequests', async ({ id }) => {
+  return await loginRequests.get(id)
+})
 
 handleQuery('documents.all', async (...args) => {
   const docs = await jlinx.all()

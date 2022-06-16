@@ -2,6 +2,13 @@ import { contextBridge, ipcRenderer, IpcRendererEvent, shell } from 'electron'
 
 contextBridge.exposeInMainWorld('electron', {
   ipcRenderer: {
+    on(channel, func) {
+      const subscription = (_event, ...args) =>
+        func(...args)
+      ipcRenderer.on(channel, subscription)
+      return () => ipcRenderer.removeListener(channel, subscription)
+    },
+
     invoke: (...args) =>
       ipcRenderer.invoke(...args),
 

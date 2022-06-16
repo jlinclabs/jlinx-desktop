@@ -15,12 +15,14 @@ import Alert from '@mui/material/Alert'
 import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
 
+
 import { toPage } from './routing'
 import { useQuery, useCommand } from './ipc'
 import { useGoToPage } from './routing'
 import PageHeader from './PageHeader'
 import Link from './Link'
 import ErrorAlert from './ErrorAlert'
+import Timestamp from './Timestamp'
 import InspectObject from './InspectObject'
 
 export default function AccountShowPage(props){
@@ -72,10 +74,21 @@ function Account({ account }){
   return <Box {...{
     sx: {
       m: 1,
-      backgroundColor: 'background.paper',
+      // backgroundColor: 'background.paper',
     },
   }}>
-    <InspectObject object={account} />
+    <Typography variant="h4">
+      <Link href={`https://${account.host}`}>{account.host}</Link>
+    </Typography>
+    <Typography variant="h6">
+      created <Timestamp at={account.createdAt}/>
+    </Typography>
+    <Typography variant="body2">
+      app account id <Link href={`https://testnet1.jlinx.test/${account.id}`}>{account.id}</Link>
+    </Typography>
+    <Typography variant="body2">
+      app user id <Link href={`https://testnet1.jlinx.test/${account.appUser}`}>{account.appUser}</Link>
+    </Typography>
     <p>
       <Button
         disabled={!deleteCommand.idle}
@@ -88,5 +101,6 @@ function Account({ account }){
         onClick={onLogin}
       >Login</Button>
     </p>
+    <InspectObject object={account}/>
   </Box>
 }

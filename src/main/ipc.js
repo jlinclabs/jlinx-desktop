@@ -42,10 +42,6 @@ function execCommand(commandName, options){
   window.webContents.send('execCommand', options)
 }
 
-handleCommand('ping', ({ id }) => {
-  return { pong: id }
-})
-
 handleQuery('__inspect', () => {
   return {
     queries: Object.keys(queries),

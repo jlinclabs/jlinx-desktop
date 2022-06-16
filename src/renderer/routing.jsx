@@ -4,7 +4,7 @@ import { useCallback } from 'react'
 import { handleCommand } from './ipc'
 
 import {
-  MemoryRouter as Router,
+  MemoryRouter,
   Routes as ReactRouterRoutes,
   Route,
   Navigate,
@@ -23,6 +23,7 @@ import IdentificationShowPage from './IdentificationShowPage'
 import AccountsPage from './AccountsPage'
 import AccountAddPage from './AccountAddPage'
 import AccountShowPage from './AccountShowPage'
+import LoginRequestsPage from './LoginRequestsPage'
 // import DidsPage from './DidsPage'
 // import DidShowPage from './DidShowPage'
 // import DidCreatePage from './DidCreatePage'
@@ -43,6 +44,7 @@ const pages = [
   AccountsPage,
   AccountAddPage,
   AccountShowPage,
+  LoginRequestsPage,
   // DidsPage,
   // DidCreatePage,
   // DidResolvePage,
@@ -79,7 +81,14 @@ export function CurrentRoute(){
   return route
 }
 
-export { Router, useLocation, useHref, useNavigate }
+export { useLocation, useHref, useNavigate }
+
+export function Router({children, ...props}){
+  return <MemoryRouter {...props}>
+    <MainProcessEventListener />
+    {children}
+  </MemoryRouter>
+}
 
 export function openExternalUrl(url){
   window.electron.shell.openExternal(url)
@@ -102,10 +111,19 @@ export function useGoToPage(){
   )
 }
 
-handleCommand('location.set', ({ location }) => {
-  console.log('CMD: location.set', location)
-  window.location = location
-})
+
+function MainProcessEventListener(){
+  const goToPage = useGoToPage()
+  React.useEffect(
+    () => {
+      return window.electron.ipcRenderer.on('gotoPage', (opts) => {
+        const { pageName, params } = opts
+        goToPage(pageName, params)
+      })
+    },
+    []
+  )
+}
 
 function paramsToSearch(params){
   const search = new URLSearchParams()

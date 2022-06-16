@@ -107,6 +107,8 @@ function AccountForReview({ account }){
   }}>
     <InspectObject object={account} />
     <InspectObject object={command.result} />
+    <Typography mt={2}>{account.host}</Typography>
+    <Typography mt={2}>{account.createdAt}</Typography>
     <p>
       <Button
         disabled={!command.idle}
