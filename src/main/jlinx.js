@@ -33,14 +33,20 @@ const appAccounts = jlinx.vault.recordStore('appAccounts')
 const loginRequests = new LoginRequestHandler({
   jlinx,
   appAccounts,
-  onLoginRequest(loginRequest){
-    console.log('NEW LOGIN REQ', loginRequest)
+  onLoginRequest(newSessionRequest){
+    console.log('NEW LOGIN REQ', newSessionRequest)
+
+    const host = newSessionRequest.host
+    const id = newSessionRequest.sessionRequestId
+    const ip = newSessionRequest.sourceInfo.ip
+    const ua = newSessionRequest.sourceInfo.ua.ua
 
     const notification = new Notification({
       // icon // TODO jlinx icon
       title: 'New App Login Request',
-      body: `${loginRequest.host}`,
+      body: `login to ${host} from ${ip} ${ua}`,
     })
+
     notification.on('click', () => {
       console.log('NOTIFICATION CLICKED')
       windows = BrowserWindow.getAllWindows()
@@ -48,13 +54,12 @@ const loginRequests = new LoginRequestHandler({
       // console.log({win})
       win.webContents.send('gotoPage', {
         pageName: 'LoginRequests',
-        params: { id: loginRequest.id }
+        params: { id }
       })
       win.show()
     })
     notification.show()
     console.log({ notification })
-
     setTimeout(
       () => {
         // dont garbage collect me
@@ -67,7 +72,7 @@ const loginRequests = new LoginRequestHandler({
 })
 
 
-handleQuery('loginRequests.all', async ({  }) => {
+handleQuery('loginRequests.all', async () => {
   return await loginRequests.all()
 })
 

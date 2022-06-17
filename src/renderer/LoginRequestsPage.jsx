@@ -2,6 +2,7 @@ import * as React from 'react'
 import Paper from '@mui/material/Paper'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
+import Paper from '@mui/material/Paper'
 import Button from '@mui/material/Button'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
@@ -22,63 +23,73 @@ import ErrorAlert from './ErrorAlert'
 import { useQuery, useCommand } from './ipc'
 import InspectObject from './InspectObject'
 
-export default function LoginRequestsPage(){
-  const query = useQuery('loginRequests')
+export default function LoginRequestsPage({ id }){
+  const query = useQuery('loginRequests.get', { id })
+  console.log('LOGIN REQUESTS query', query)
 
   return <Box sx={{ flexGrow: 1 }}>
     <h1>Login Requests</h1>
-    <LoginRequests {...{
+    {query.error && <ErrorAlert error={query.error}/>}
+    <LoginRequest {...{
       loading: query.loading,
-      loginRequests: query.result,
+      loginRequest: query.result,
     }}/>
   </Box>
 }
 
-function LoginRequests({ loading, error, loginRequests }){
-  return <List sx={{
-    width: '100%',
-    // bgcolor: 'background.paper',
-    // flexGrow: 1,
-  }}>
-    {
-      error
-        ? <ErrorAlert {...{error}}/> :
-
-        (loading || !loginRequests)
-        ? Array(10).fill().map((_, i) =>
-          <Skeleton key={i} animation="wave" height="100px" />
-        ) :
-      // else
-      documents.map(document =>
-        <LoginRequest {...{key: document.id, document}}/>
-      )
-    }
-  </List>
+function LoginRequest({ loading, loginRequest }){
+  return <Paper elevation={3}
+    sx={{m: 2}}
+  >
+    <InspectObject object={loginRequest}/>
+  </Paper>
 }
 
+// function LoginRequests({ loading, error, loginRequests, selected }){
+//   return <List sx={{
+//     width: '100%',
+//     // bgcolor: 'background.paper',
+//     // flexGrow: 1,
+//   }}>
+//     {
+//       error
+//         ? <ErrorAlert {...{error}}/> :
 
-function LoginRequest({ document }){
-  return <ListItem>
-    <ListItemAvatar>
-      <Avatar>
-        <ImageIcon />
-      </Avatar>
-    </ListItemAvatar>
+//         (loading || !loginRequests)
+//         ? Array(10).fill().map((_, i) =>
+//           <Skeleton key={i} animation="wave" height="100px" />
+//         ) :
+//       // else
+//       documents.map(document =>
+//         <LoginRequest {...{key: document.id, document}}/>
+//       )
+//     }
+//   </List>
+// }
 
-    <ListItemText {...{
-      primaryTypographyProps: {
-        sx: {
-          fontFamily: 'monospace',
-          whiteSpace: 'nowrap',
-        },
-        component: Link,
-        to: toPage('DocumentShow', { id: document.id }),
-      },
-      primary: `${document.id}`,
-      secondary: (
-        `length=${document.length}` +
-        `${document.writable ? ' (writable)' : ''}`
-      ),
-    }}/>
-  </ListItem>
-}
+
+// function LoginRequest({ document }){
+//   return <ListItem>
+//     <ListItemAvatar>
+//       <Avatar>
+//         <ImageIcon />
+//       </Avatar>
+//     </ListItemAvatar>
+
+//     <ListItemText {...{
+//       primaryTypographyProps: {
+//         sx: {
+//           fontFamily: 'monospace',
+//           whiteSpace: 'nowrap',
+//         },
+//         component: Link,
+//         to: toPage('DocumentShow', { id: document.id }),
+//       },
+//       primary: `${document.id}`,
+//       secondary: (
+//         `length=${document.length}` +
+//         `${document.writable ? ' (writable)' : ''}`
+//       ),
+//     }}/>
+//   </ListItem>
+// }

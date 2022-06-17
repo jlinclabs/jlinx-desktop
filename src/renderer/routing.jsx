@@ -11,6 +11,8 @@ import {
   useRoutes,
   useSearchParams,
   useLocation,
+  useParams,
+  useSearchParams,
   useHref,
   useNavigate,
 } from 'react-router-dom'
@@ -111,9 +113,19 @@ export function useGoToPage(){
   )
 }
 
+export function useCurrentPage(){
+  const location = useLocation()
+  const [searchParams] = useSearchParams()
+  const params = Object.fromEntries(searchParams.entries())
+  const pageName = location.pathname.slice(1)
+  console.log('CurrentPage:', { pageName, params })
+  return { pageName, params }
+}
 
 function MainProcessEventListener(){
+  const currentPage = useCurrentPage()
   const goToPage = useGoToPage()
+  Object.assign(global, { currentPage, goToPage })
   React.useEffect(
     () => {
       return window.electron.ipcRenderer.on('gotoPage', (opts) => {
