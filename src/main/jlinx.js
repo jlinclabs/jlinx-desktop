@@ -135,60 +135,52 @@ handleQuery('accounts.get', async ({ id }) => {
   return await appAccounts.get(id)
 })
 
-handleQuery('accounts.review', async ({ id }) => {
-  debug('accounts.review', { id })
-  const appUser = await jlinx.get(id)
-  debug('accounts.review', { appUser })
-  if (appUser.docType !== 'AppUser'){
-    throw new Error(`this does not look like an account offering`)
-  }
-  if (!appUser.isOfferingAccount()){
-    throw new Error(`this does not look like an account offering`)
-  }
-  const value = await appUser.value()
-  return {
-    id: appUser.id,
-    host: appUser.host,
-    // ...value,
-    // id,
-    appUserId: id,
-    // host,
-    createdAt: now(), // TODO make real
-  }
-})
 
-// TODO rename to 'accounts.accept' ?
-handleCommand('accounts.add', async ({ id }) => {
-  const appUserId = id
+async function getAppUserOffering(appUserId){
+  debug('getAppUserOffering', { appUserId })
   const appUser = await jlinx.get(appUserId)
   if (appUser.docType !== 'AppUser'){
     throw new Error(`this does not look like an account offering`)
   }
-  debug('accounts.add', { appUser })
   await appUser.update()
-  debug('accounts.add appUser.value',
-    await appUser.value()
-  )
-  if (appUser.offeringAccount){
 
+  debug('getAppUserOffering', {
+    appUser,
+    _value: appUser._value
+  })
+
+  if (!appUser.isOffered){
+    throw new Error(`this does not look like an account offering`)
   }
-  const appAccount = await jlinx.createAppAccount({
-    appUserId
-  })
+  return appUser
+}
 
-  await appAccount.acceptAccount({
-    appUserId: id,
-    signupSecret,
-  })
+handleQuery('accounts.review', async ({ id }) => {
+  const appUser = await getAppUserOffering(id)
+  return {
+    id: appUser.id,
+    host: appUser.host,
+    // createdAt: now(), // TODO make real
+  }
+})
 
-  // persist id and other data
-  await appAccounts.put(appAccount.id, {
-    id: appAccount.id,
-    appUserId: id,
-    host: appAccount.host,
-    createdAt: now(),
-  })
-  return appAccount
+handleCommand('accounts.resolve', async ({ id, accept }) => {
+  const appUser = await getAppUserOffering(id)
+  if (accept) {
+    const appAccount = await appUser.acceptOffer()
+    // persist app account record
+    await appAccounts.put(appAccount.id, {
+      id: appAccount.id,
+      appUserId: id,
+      host: appAccount.host,
+      createdAt: now(),
+    })
+    return {
+      appAccountId: appAccount.id,
+    }
+  }else{
+    await appUser.rejectOffer()
+  }
 })
 
 handleCommand('accounts.delete', async ({ id }) => {
