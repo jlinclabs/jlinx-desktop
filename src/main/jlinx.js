@@ -67,8 +67,8 @@ const loginRequests = new LoginRequestHandler({
 })
 
 
-handleQuery('loginRequests', async ({ id }) => {
-  return await loginRequests.get(id)
+handleQuery('loginRequests.all', async ({  }) => {
+  return await loginRequests.all()
 })
 
 handleQuery('documents.all', async (...args) => {
