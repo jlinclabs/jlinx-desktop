@@ -188,10 +188,12 @@ handleCommand('accounts.delete', async ({ id }) => {
 })
 
 
-
-
 handleQuery('loginRequests.get', async ({ id }) => {
   return await loginRequests.get(id)
+})
+
+handleCommand('loginRequests.resolve', async ({ id, accept }) => {
+  return await loginRequests.resolve(id, accept)
 })
 
 // handleCommand('jlinx.create', async (...args) => {

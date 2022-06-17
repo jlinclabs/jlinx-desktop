@@ -94,16 +94,22 @@ module.exports = class LoginRequestHandler {
 
   async get(id){
     const [ appAccountId, sessionRequestId ] = id.split('/')
+    const appAccount = await this.appAccounts.get(appAccountId)
     const appUser = this._appUsers.get(appAccountId)
     const sessionRequests = await appUser.getSessionRequests()
-    return sessionRequests
-      .find(sr => sr.sessionRequestId === sessionRequestId)
+    const sessionRequest = sessionRequests.find(sr =>
+      sr.sessionRequestId === sessionRequestId)
+    if (sessionRequest) return {
+      sessionRequest,
+      appAccount,
+    }
   }
 
-  // async get(id){
-  //   const [docId, index] = id.split('/')
-  //   // const appAccount = await this.appAccounts.get(appAccountId)
-  //   const appUser = await this.jlinx.get(docId)
-  //   return await appUser.getJson(index)
-  // }
+  async resolve(id, accept){
+    const [ appAccountId, sessionRequestId ] = id.split('/')
+    const appAccount = await this.jlinx.get(appAccountId)
+    await appAccount.update()
+    return await appAccount.resolveSessionRequest(sessionRequestId, accept)
+  }
+
 }

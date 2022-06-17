@@ -68,6 +68,11 @@ export function CurrentRoute(){
     {
       path: '/',
       element: <Navigate replace to={HOMEPAGE} />,
+      // element: <Navigate replace to={
+      //   toPage("LoginRequests", {
+      //     "id": "0P9Xf8M6s3-TwITAX8wLC1FFpsNliFKjCIh_aVNky4Q/1bbde643afc84c1d0c1878f3"
+      //   })
+      // } />,
     },
     ...pages.map(Page => ({
       path: pageToPath(Page),

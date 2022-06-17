@@ -24,25 +24,96 @@ import { useQuery, useCommand } from './ipc'
 import InspectObject from './InspectObject'
 
 export default function LoginRequestsPage({ params: { id } }){
-  console.log('LoginRequestsPage', { id })
   const query = useQuery('loginRequests.get', { id })
-  console.log('LOGIN REQUESTS query', query)
-
-  return <Box sx={{ flexGrow: 1 }}>
-    <h1>Login Requests</h1>
+  return <Box sx={{
+    flexGrow: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  }}>
     {query.error && <ErrorAlert error={query.error}/>}
-    <LoginRequest {...{
-      loading: query.loading,
-      loginRequest: query.result,
-    }}/>
+    {query.result && <LoginRequest {...{
+      id,
+      appAccount: query.result.appAccount,
+      sessionRequest: query.result.sessionRequest,
+    }}/>}
+    {/* <InspectObject object={query}/> */}
   </Box>
 }
 
-function LoginRequest({ loading, loginRequest }){
-  return <Paper elevation={3}
-    sx={{m: 2}}
+function LoginRequest({ id, appAccount, sessionRequest }){
+  const command = useCommand('loginRequests.resolve', { id })
+
+  React.useEffect(
+    () => {
+      console.log('LOGIN REQ RESOLVED', command)
+      // if (command.result) goToPage('DocumentShow', { id: command.result })
+    },
+    [command.state]
+  )
+
+  const onAccept = React.useCallback(
+    () => { command.call({ accept: true }) },
+    [command.state]
+  )
+  const onReject = React.useCallback(
+    () => { command.call({ accept: false }) },
+    [command.state]
+  )
+
+  return <Paper
+    elevation={3}
+    sx={{
+      mt: 2,
+      p: 2,
+      maxWidth: '400px',
+    }}
   >
-    <InspectObject object={loginRequest}/>
+    <Typography variant="h3" sx={{mb: 1}}>Login?</Typography>
+    <Typography variant="body1">
+      Someone has requested to login to your&nbsp;
+      <Link to={toPage('AccountShow', { id: appAccount.id })}>
+        {appAccount.host}
+      </Link>
+      &nbsp;account.
+    </Typography>
+
+    <Box sx={{m: 2}}>
+      <Typography variant="body2">
+        {`IP: ${sessionRequest?.sourceInfo?.ip}`}
+      </Typography>
+      <Typography variant="body2">
+        {
+          `${sessionRequest?.sourceInfo?.ua?.browser?.name} ` +
+          `${sessionRequest?.sourceInfo?.ua?.browser?.major}`
+        }
+      </Typography>
+      <Typography variant="body2">
+        {
+          `${sessionRequest?.sourceInfo?.ua?.os?.name} ` +
+          `${sessionRequest?.sourceInfo?.ua?.os?.version}`
+        }
+      </Typography>
+    </Box>
+
+    <Box sx={{
+      mt: 2,
+      display: 'flex',
+      flexDirection: 'row',
+      justifyContent: 'flex-end',
+    }}>
+      <Button {...{
+        variant: 'text',
+        onClick: onReject,
+        disabled: !command.idle,
+        sx: {mr: 1}
+      }}>{'Reject'}</Button>
+      <Button {...{
+        variant: 'contained',
+        onClick: onAccept,
+        disabled: !command.idle,
+      }}>{'Accept and Login'}</Button>
+    </Box>
   </Paper>
 }
 
