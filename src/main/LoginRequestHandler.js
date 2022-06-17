@@ -35,8 +35,8 @@ module.exports = class LoginRequestHandler {
       debug('_watch', { appUser })
       this._appUsers.set(appAccountId, appUser)
       this._seen.set(appAccountId, new Set())
-      await this._getNewSessionRequests(appUser)
-      this._waitForNextUpdate(appUser)
+      await this._getNewSessionRequests(appAccountId)
+      this._waitForNextUpdate(appAccountId)
     })().catch(error => {
       console.error('FAILED TO WATCH AppAccount', appAccountId, error)
     })
@@ -51,9 +51,9 @@ module.exports = class LoginRequestHandler {
     this._seen.delete(appAccountId)
   }
 
-  async _getNewSessionRequests(appUser){
-    const seen = this._seen.get(appUser.appAccountId)
-    if (!seen) return
+  async _getNewSessionRequests(appAccountId){
+    const appUser = this._appUsers.get(appAccountId)
+    const seen = this._seen.get(appAccountId)
     const sessionRequests = await appUser.getSessionRequests()
     const newSessionRequests = []
     for (const sessionRequest of sessionRequests){
@@ -64,21 +64,22 @@ module.exports = class LoginRequestHandler {
     return newSessionRequests
   }
 
-  _waitForNextUpdate(appUser){
-    const { appAccountId } = appUser
+  _waitForNextUpdate(appAccountId){
     if (!this._watching(appAccountId)) { debug(`ABORT ${appAccountId}`); return}
+    const appUser = this._appUsers.get(appAccountId)
     debug('waiting for', appUser.appAccountId)
     appUser.waitForUpdate().then(
       async () => {
         if (!this._watching(appAccountId)) { debug(`ABORT ${appAccountId}`); return}
         await appUser.update()
         debug('appUser updated', appUser)
-        const [newSessionRequest] = await this._getNewSessionRequests(appUser)
+        const [newSessionRequest] = await this._getNewSessionRequests(appAccountId)
         debug({ newSessionRequest })
         if (newSessionRequest){
           this._onLoginRequest({
             ...newSessionRequest,
             appAccountId,
+            id: `${appAccountId}/${newSessionRequest.sessionRequestId}`,
             host: appUser.host,
           })
         }
@@ -91,8 +92,12 @@ module.exports = class LoginRequestHandler {
   }
 
 
-  async all(){
-    const ids = await this.appAccounts.ids()
+  async get(id){
+    const [ appAccountId, sessionRequestId ] = id.split('/')
+    const appUser = this._appUsers.get(appAccountId)
+    const sessionRequests = await appUser.getSessionRequests()
+    return sessionRequests
+      .find(sr => sr.sessionRequestId === sessionRequestId)
   }
 
   // async get(id){

@@ -37,9 +37,8 @@ const loginRequests = new LoginRequestHandler({
     console.log('NEW LOGIN REQ', newSessionRequest)
 
     const host = newSessionRequest.host
-    const id = newSessionRequest.sessionRequestId
-    const ip = newSessionRequest.sourceInfo.ip
-    const ua = newSessionRequest.sourceInfo.ua.ua
+    const ip = newSessionRequest.sourceInfo?.ip
+    const ua = newSessionRequest.sourceInfo?.ua?.ua
 
     const notification = new Notification({
       // icon // TODO jlinx icon
@@ -54,7 +53,7 @@ const loginRequests = new LoginRequestHandler({
       // console.log({win})
       win.webContents.send('gotoPage', {
         pageName: 'LoginRequests',
-        params: { id }
+        params: { id: newSessionRequest.id }
       })
       win.show()
     })
@@ -71,10 +70,6 @@ const loginRequests = new LoginRequestHandler({
   }
 })
 
-
-handleQuery('loginRequests.all', async () => {
-  return await loginRequests.all()
-})
 
 handleQuery('documents.all', async (...args) => {
   const docs = await jlinx.all()
@@ -190,6 +185,13 @@ handleCommand('accounts.resolve', async ({ id, accept }) => {
 
 handleCommand('accounts.delete', async ({ id }) => {
   return await appAccounts.delete(id)
+})
+
+
+
+
+handleQuery('loginRequests.get', async ({ id }) => {
+  return await loginRequests.get(id)
 })
 
 // handleCommand('jlinx.create', async (...args) => {

@@ -23,7 +23,8 @@ import ErrorAlert from './ErrorAlert'
 import { useQuery, useCommand } from './ipc'
 import InspectObject from './InspectObject'
 
-export default function LoginRequestsPage({ id }){
+export default function LoginRequestsPage({ params: { id } }){
+  console.log('LoginRequestsPage', { id })
   const query = useQuery('loginRequests.get', { id })
   console.log('LOGIN REQUESTS query', query)
 
