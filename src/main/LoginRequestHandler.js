@@ -26,7 +26,7 @@ module.exports = class LoginRequestHandler {
     debug('WATCHING FOR LOGIN REQUEST ON', appAccountId)
     const appAccount = await this.appAccounts.get(appAccountId)
     debug({ appAccount })
-    const appUserDoc = await this.jlinx.get(appAccount.appUser)
+    const appUserDoc = await this.jlinx.get(appAccount.appUserId)
     const promise = appUserDoc.waitForUpdate()
       .then(
         async () => {

@@ -86,6 +86,7 @@ function ReviewAccount({ id }){
 
 
 function AccountForReview({ account }){
+  console.log('AccountForReview', account)
   const goToPage = useGoToPage()
   const command = useCommand('accounts.add', { id: account.id })
   const addAccount = React.useCallback(

@@ -1,6 +1,5 @@
 const { Notification, BrowserWindow, ipcMain } = require('electron')
 const Debug = require('debug')
-const { URL } = require('url')
 const Path = require('path')
 const b4a = require('b4a')
 const { app } = require('electron')
@@ -100,8 +99,8 @@ handleQuery('documents.get', async (id) => {
     length: doc.length,
     writable: doc.writable,
     contentType: doc.contentType,
-    value: await doc.value(),
-    // entries: await doc.all(),
+    value: (doc.value && await doc.value()),
+    // entries: await doc.entries(),
   }
 })
 
@@ -138,69 +137,57 @@ handleQuery('accounts.get', async ({ id }) => {
 
 handleQuery('accounts.review', async ({ id }) => {
   debug('accounts.review', { id })
-  const doc = await jlinx.get(id)
-  debug('accounts.review', { doc })
-  const headerJson = await doc.get(0)
-  debug('accounts.review',
-    headerJson
-  )
-  const header = await doc.getJson(0)
-  debug('accounts.review', { header })
-  const { followupUrl } = header
-  return {...header, id}
+  const appUser = await jlinx.get(id)
+  debug('accounts.review', { appUser })
+  if (appUser.docType !== 'AppUser'){
+    throw new Error(`this does not look like an account offering`)
+  }
+  if (!appUser.isOfferingAccount()){
+    throw new Error(`this does not look like an account offering`)
+  }
+  const value = await appUser.value()
+  return {
+    id: appUser.id,
+    host: appUser.host,
+    // ...value,
+    // id,
+    appUserId: id,
+    // host,
+    createdAt: now(), // TODO make real
+  }
 })
 
+// TODO rename to 'accounts.accept' ?
 handleCommand('accounts.add', async ({ id }) => {
-  debug('accounts.add', { id })
-  const appUser = await jlinx.get(id)
+  const appUserId = id
+  const appUser = await jlinx.get(appUserId)
+  if (appUser.docType !== 'AppUser'){
+    throw new Error(`this does not look like an account offering`)
+  }
   debug('accounts.add', { appUser })
-  const appUserE1 = await appUser.getJson(0)
-  debug('accounts.add', { appUserE1 })
-  const { followupUrl, signupSecret } = appUserE1
+  await appUser.update()
+  debug('accounts.add appUser.value',
+    await appUser.value()
+  )
+  if (appUser.offeringAccount){
 
-  const host = new URL(followupUrl).host
+  }
+  const appAccount = await jlinx.createAppAccount({
+    appUserId
+  })
 
-  // create our AppAccount document
-  const appAccountDoc = await jlinx.createAppAccount({
-    host,
-    appUser: id,
+  await appAccount.acceptAccount({
+    appUserId: id,
     signupSecret,
   })
 
-  const appAccount = {
-    id: appAccountDoc.id,
-    appUser: id,
-    host,
-    createdAt: now(),
-  }
-
-  const appUserUpdated = appUser.waitForUpdate()
-
-  // post AppAccount.id to followupUrl
-  const response = await fetch(followupUrl, {
-    method: 'post',
-    headers: {
-      'Content-Type': 'application/json',
-      Accept: 'application/json'
-    },
-    body: JSON.stringify({
-      appUserId: id,
-      appAccountId: appAccountDoc.id,
-      signupSecret
-    })
-  })
-  debug({ response })
-  debug(await response.json())
-
-  await appUserUpdated
-  await appUser.update()
-  console.log({ appUser })
-  const appUserE2 = await appUser.getJson(1)
-  debug('accounts.add', { appUserE2 })
-
   // persist id and other data
-  await appAccounts.put(appAccount.id, appAccount)
-
+  await appAccounts.put(appAccount.id, {
+    id: appAccount.id,
+    appUserId: id,
+    host: appAccount.host,
+    createdAt: now(),
+  })
   return appAccount
 })
 
@@ -396,20 +383,3 @@ handleQuery('getAllIdentifications', async () => {
 // })
 
 
-
-
-async function fetch (url, options = {}) {
-  const { default: fetch } = await import('node-fetch')
-  debug('fetch req', { url, options })
-  const response = await fetch(url, options)
-  if (response.status >= 400) {
-    debug('fetch failed', {
-      url,
-      status: response.status,
-      statusText: response.statusText
-    })
-    throw new Error(`request failed url="${url}"`)
-  }
-  debug('fetch res', { url, options, status: response.status })
-  return response
-}

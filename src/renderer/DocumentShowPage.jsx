@@ -125,7 +125,7 @@ function Document({ doc, refresh }){
         ref: inputRef,
         required: true,
         multiline: true,
-        sx: {flex: '1 1 auto', mr: 1 },
+        sx: { flex: '1 1 auto', mr: 1 },
         label: 'entry to append',
         variant: 'outlined',
         disabled: !!command.pending,
@@ -133,17 +133,24 @@ function Document({ doc, refresh }){
       <Button variant="contained" type="submit">Append</Button>
     </Box>
 
-    <ul>
-      {doc.value
-        .map((entry, index) =>
-          <li key={index}>
-            <span>{index}</span>&nbsp;
-            <DocumentEntry {...{docType: doc.type, id: doc.id, entry, index}}/>
-          </li>
-        )
-        .reverse()
-      }
-    </ul>
+    {doc.enrties
+      ? <ul>
+        {doc.enrties
+          .map((entry, index) =>
+            <li key={index}>
+              <span>{index}</span>&nbsp;
+              <DocumentEntry {...{docType: doc.type, id: doc.id, entry, index}}/>
+            </li>
+          )
+          .reverse()
+        }
+      </ul>
+      : null
+    }
+    {doc.value
+      ? <InspectObject object={doc.value}/>
+      : null
+    }
 
   </Box>
 }
