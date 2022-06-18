@@ -88,7 +88,7 @@ module.exports = class LoginRequestHandler {
         debug(`LoginRequestHandler wait failed for ${appUser.appAccountId}`, error)
       }
     )
-    .then(() => { this._waitForNextUpdate(appUser) })
+    .then(() => { this._waitForNextUpdate(appAccountId) })
   }
 
 

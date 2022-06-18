@@ -24,6 +24,10 @@ import { useQuery, useCommand } from './ipc'
 import InspectObject from './InspectObject'
 
 export default function LoginRequestsPage({ params: { id } }){
+  return <Page {...{key: id, id}}/>
+}
+
+function Page({ id }){
   const query = useQuery('loginRequests.get', { id })
   return <Box sx={{
     flexGrow: 1,

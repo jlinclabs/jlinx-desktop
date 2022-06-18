@@ -87,7 +87,7 @@ function Account({ account }){
       app account id <Link href={`https://testnet1.jlinx.test/${account.id}`}>{account.id}</Link>
     </Typography>
     <Typography variant="body2">
-      app user id <Link href={`https://testnet1.jlinx.test/${account.appUser}`}>{account.appUser}</Link>
+      app user id <Link href={`https://testnet1.jlinx.test/${account.appUserId}`}>{account.appUserId}</Link>
     </Typography>
     <p>
       <Button
