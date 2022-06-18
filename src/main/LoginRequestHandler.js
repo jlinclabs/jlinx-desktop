@@ -109,7 +109,11 @@ module.exports = class LoginRequestHandler {
     const [ appAccountId, sessionRequestId ] = id.split('/')
     const appAccount = await this.jlinx.get(appAccountId)
     await appAccount.update()
-    return await appAccount.resolveSessionRequest(sessionRequestId, accept)
+    await appAccount.resolveSessionRequest(sessionRequestId, accept)
+    return {
+      appAccountId,
+      sessionRequestId,
+    }
   }
 
 }

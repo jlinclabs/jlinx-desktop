@@ -50,8 +50,10 @@ function LoginRequest({ id, appAccount, sessionRequest }){
 
   React.useEffect(
     () => {
-      console.log('LOGIN REQ RESOLVED', command)
-      // if (command.result) goToPage('DocumentShow', { id: command.result })
+      if (command.result) {
+        // TODO alert that login was success
+        goToPage('AccountShow', { id: command.result.appAccountId })
+      }
     },
     [command.state]
   )

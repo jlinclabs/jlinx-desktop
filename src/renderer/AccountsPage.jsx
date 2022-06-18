@@ -23,7 +23,7 @@ import { useQuery, useCommand } from './ipc'
 import Timestamp from './Timestamp'
 import InspectObject from './InspectObject'
 
-export default function AccountsPage(){
+export default function AccountsPage(props){
   const query = useQuery('accounts.all')
 
   const reload = query.call

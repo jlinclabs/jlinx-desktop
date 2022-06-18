@@ -15,8 +15,7 @@ import Alert from '@mui/material/Alert'
 import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
 
-
-import { toPage } from './routing'
+import { toPage, openExternalUrl } from './routing'
 import { useQuery, useCommand } from './ipc'
 import { useGoToPage } from './routing'
 import PageHeader from './PageHeader'
@@ -67,9 +66,18 @@ function Account({ account }){
   )
   const onLogin = React.useCallback(
     () => {
-
+      loginCommand.call()
     },
-    []
+    [loginCommand.state]
+  )
+
+  React.useEffect(
+    () => {
+      if (loginCommand.result){
+        openExternalUrl(loginCommand.result.loginUrl)
+      }
+    },
+    [loginCommand.state]
   )
   return <Box {...{
     sx: {
@@ -91,16 +99,16 @@ function Account({ account }){
     </Typography>
     <p>
       <Button
-        disabled={!deleteCommand.idle}
+        disabled={loginCommand.pending}
         variant="text"
         onClick={onDelete}
       >delete</Button>
       <Button
-        disabled={!loginCommand.idle}
+        disabled={loginCommand.pending}
         variant="contained"
         onClick={onLogin}
       >Login</Button>
     </p>
-    <InspectObject object={account}/>
+    <InspectObject object={{account, deleteCommand, loginCommand}}/>
   </Box>
 }

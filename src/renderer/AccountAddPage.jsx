@@ -2,6 +2,7 @@ import * as React from 'react'
 import Paper from '@mui/material/Paper'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
+import Paper from '@mui/material/Paper'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import ListItemText from '@mui/material/ListItemText'
@@ -24,13 +25,17 @@ import ErrorAlert from './ErrorAlert'
 import InspectObject from './InspectObject'
 
 export default function AccountAddPage(props){
-  console.log('AccountAddPage', props.params)
+  console.log('AccountAddPage', props)
   const { id } = props.params
 
   // const query = useQuery('getAllAccounts')
 
-  return <Box sx={{ flexGrow: 1 }}>
-    <PageHeader>Add App Account</PageHeader>
+  return <Box sx={{
+    flexGrow: 1,
+    // display: 'flex',
+    // flexDirection: 'column',
+    // alignItems: 'center',
+  }}>
     {/* {query.error && <ErrorAlert error={query.error}/>} */}
     {id
       ? <ReviewAccount {...{ id }}/>
@@ -51,27 +56,33 @@ function AccountCreateForm(){
     },
     [goToPage]
   )
-  return <Box {...{
-    onSubmit,
-    component: 'form',
-    sx: { m: 1, display: 'flex', alignItems: 'center' },
-  }}>
-    <TextField
-      autoFocus
-      ref={inputRef}
-      sx={{flex: '1 1 auto', mr: 1 }}
-      label="Code"
-      variant="outlined"
-      required
-    />
-    <Button variant="contained" type="submit">Add</Button>
-  </Box>
+  return <>
+    <PageHeader>Add App Account</PageHeader>
+    <Box {...{
+      onSubmit,
+      component: 'form',
+      sx: { m: 1, display: 'flex', alignItems: 'center' },
+    }}>
+      <TextField
+        autoFocus
+        ref={inputRef}
+        sx={{flex: '1 1 auto', mr: 1 }}
+        label="Code"
+        variant="outlined"
+        required
+      />
+      <Button variant="contained" type="submit">Add</Button>
+    </Box>
+  </>
 }
 
 function ReviewAccount({ id }){
   const query = useQuery('accounts.review', { id })
   return <Box {...{
-    sx: { m: 1 },
+    flexGrow: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
   }}>
     {
       query.error
@@ -106,25 +117,40 @@ function AccountForReview({ account }){
     },
     [command.result]
   )
-  return <Box {...{
-    sx: { m: 1 },
-  }}>
-    <InspectObject object={account} />
-    <InspectObject object={command.result} />
-    <Typography mt={2}>{account.host}</Typography>
-    <Typography mt={2}>{account.createdAt}</Typography>
-    <p>
+  return <Paper
+    elevation={3}
+    sx={{
+      mt: 2,
+      p: 2,
+      maxWidth: '400px',
+    }}
+  >
+    <Typography variant="h4" mb={2}>Create App Account</Typography>
+    <Typography variant="body1" mb={1}>
+      {`Would you like to create a new account at:`}
+    </Typography>
+    <Typography variant="body1">
+      <Link href={`https://${account.host}`}>{account.host}</Link>
+    </Typography>
+
+    <Box sx={{
+      mt: 2,
+      display: 'flex',
+      flexDirection: 'row',
+      justifyContent: 'flex-end',
+    }}>
       <Button
         disabled={!command.idle}
-        variant="contained"
+        variant="text"
         component={Link}
         to="/Accounts"
+        sx={{mr: 1}}
       >cancel</Button>
       <Button
         disabled={!command.idle}
         variant="contained"
         onClick={addAccount}
-      >Add</Button>
-    </p>
-  </Box>
+      >Create</Button>
+    </Box>
+  </Paper>
 }

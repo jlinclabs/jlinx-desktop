@@ -136,6 +136,15 @@ handleQuery('accounts.get', async ({ id }) => {
   return await appAccounts.get(id)
 })
 
+handleCommand('accounts.login', async ({ id }) => {
+  const account = await appAccounts.get(id)
+  // do some magic
+  // return an link to goto to login
+  return {
+    loginUrl: `https://${account.host}/jlinx/login/some-magic-here`
+  }
+})
+
 
 async function getAppUserOffering(appUserId){
   debug('getAppUserOffering', { appUserId })

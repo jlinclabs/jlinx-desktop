@@ -35,7 +35,12 @@ import LoginRequestsPage from './LoginRequestsPage'
 // import KeyCreatePage from './KeyCreatePage'
 import SettingsPage from './SettingsPage'
 
-const HOMEPAGE = "/Documents"
+const START_PAGE = (
+  ('currentPage' in sessionStorage)
+    ? JSON.parse(sessionStorage.currentPage)
+    : { pathname: '/Documents' }
+)
+console.log(`START_PAGE`, START_PAGE)
 
 const pages = [
   DocumentsPage,
@@ -61,18 +66,15 @@ const pageToName = page => page.name.split('Page')[0]
 const pageToPath = page => `/${pageToName(page)}`
 
 export function CurrentRoute(){
+  const { pathname, search } = useLocation()
+  sessionStorage.currentPage = JSON.stringify({ pathname, search })
   const [searchParams] = useSearchParams()
-  const params = {}
-  for (const [key, value] of searchParams) params[key] = value
+  const params = Object.fromEntries(searchParams.entries())
+
   const routes = [
     {
       path: '/',
-      element: <Navigate replace to={HOMEPAGE} />,
-      // element: <Navigate replace to={
-      //   toPage("LoginRequests", {
-      //     "id": "0P9Xf8M6s3-TwITAX8wLC1FFpsNliFKjCIh_aVNky4Q/1bbde643afc84c1d0c1878f3"
-      //   })
-      // } />,
+      element: <Navigate replace to={START_PAGE} />,
     },
     ...pages.map(Page => ({
       path: pageToPath(Page),
