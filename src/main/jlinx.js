@@ -38,12 +38,13 @@ const loginRequests = new LoginRequestHandler({
 
     const host = newSessionRequest.host
     const ip = newSessionRequest.sourceInfo?.ip
-    const ua = newSessionRequest.sourceInfo?.ua?.ua
+    const browser = newSessionRequest.sourceInfo?.browser?.name || ''
+    const os = newSessionRequest.sourceInfo?.os?.name || ''
 
     const notification = new Notification({
       // icon // TODO jlinx icon
       title: 'New App Login Request',
-      body: `login to ${host} from ${ip} ${ua}`,
+      body: `login to ${host} from ${ip} ${browser} ${os}`,
     })
 
     notification.on('click', () => {

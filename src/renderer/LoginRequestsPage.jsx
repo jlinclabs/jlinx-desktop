@@ -84,14 +84,14 @@ function LoginRequest({ id, appAccount, sessionRequest }){
       </Typography>
       <Typography variant="body2">
         {
-          `${sessionRequest?.sourceInfo?.ua?.browser?.name} ` +
-          `${sessionRequest?.sourceInfo?.ua?.browser?.major}`
+          `${sessionRequest?.sourceInfo?.browser?.name} ` +
+          `${sessionRequest?.sourceInfo?.browser?.major}`
         }
       </Typography>
       <Typography variant="body2">
         {
-          `${sessionRequest?.sourceInfo?.ua?.os?.name} ` +
-          `${sessionRequest?.sourceInfo?.ua?.os?.version}`
+          `${sessionRequest?.sourceInfo?.os?.name} ` +
+          `${sessionRequest?.sourceInfo?.os?.version}`
         }
       </Typography>
     </Box>
