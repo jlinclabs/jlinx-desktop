@@ -56,7 +56,7 @@ function ReviewAccount({ id }){
 
 function Account({ account }){
   const { id } = account
-  const deleteCommand = useCommand('accounts.login', { id })
+  const deleteCommand = useCommand('accounts.delete', { id })
   const loginCommand = useCommand('accounts.login', { id })
   const onDelete = React.useCallback(
     () => {

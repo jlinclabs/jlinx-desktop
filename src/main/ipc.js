@@ -4,13 +4,14 @@ const { app, ipcMain, BrowserWindow } = require('electron')
 const queries = {}
 const commands = {}
 
-ipcMain.handle('execQuery', async (event, queryName, options) => {
+ipcMain.handle('execQuery', async (event, queryName, options = {}) => {
   if (!(queryName in queries))
     throw new Error(`query "${queryName}" is not defined`)
   console.log('execQuery', queryName, options)
   try{
     const result = await queries[queryName](options)
-    console.log('execQuery', queryName, options, 'resolved', result)
+    // console.log('execQuery', queryName, options, 'resolved', result)
+    console.log('execQuery', queryName, options, 'resolved')
     return result
   }catch(error){
     console.log('execQuery', queryName, options, 'rejected', error)
@@ -18,7 +19,7 @@ ipcMain.handle('execQuery', async (event, queryName, options) => {
   }
 })
 
-ipcMain.handle('execCommand', async (event, commandName, options) => {
+ipcMain.handle('execCommand', async (event, commandName, options = {}) => {
   if (!(commandName in commands))
     throw new Error(`command "${commandName}" is not defined`)
   console.log('execCommand', commandName, options)
