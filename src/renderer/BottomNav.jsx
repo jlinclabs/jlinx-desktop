@@ -3,6 +3,7 @@ import Box from '@mui/material/Box'
 import BottomNavigation from '@mui/material/BottomNavigation'
 import BottomNavigationAction from '@mui/material/BottomNavigationAction'
 import SwitchAccountIcon from '@mui/icons-material/SwitchAccount'
+import ArticleIcon from '@mui/icons-material/Article'
 import BadgeIcon from '@mui/icons-material/Badge'
 import KeyIcon from '@mui/icons-material/Key'
 import SettingsIcon from '@mui/icons-material/Settings'
@@ -33,11 +34,11 @@ export default function BottomNav(props) {
         },
       },
     }}>
-      <BottomNavigationAction
+      {/* <BottomNavigationAction
         label="IDs"
         value="Identifications"
         icon={<BadgeIcon />}
-      />
+      /> */}
       <BottomNavigationAction
         label="Accounts"
         value="Accounts"
@@ -46,7 +47,7 @@ export default function BottomNav(props) {
       <BottomNavigationAction
         label="Documents"
         value="Documents"
-        icon={<SwitchAccountIcon />}
+        icon={<ArticleIcon />}
       />
       {/* <BottomNavigationAction
         label="DIDs"

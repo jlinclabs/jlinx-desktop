@@ -23,8 +23,8 @@ const VAULT_NAME = process.env.VAULT_NAME || 'jlinx'
 const VAULT_PATH = Path.join(app.getPath('userData'), `${VAULT_NAME}.vault`)
 
 const jlinx = new JlinxClient({
-  // hostUrl: 'https://testnet1.jlinx.test',
-  hostUrl: 'https://testnet1.jlinx.io/', // production
+  // hostUrl: 'https://testnet1.jlinx.test', // development
+  hostUrl: 'https://testnet1.jlinx.io', // production
   vaultPath: VAULT_PATH,
   vaultKey: TMP_VAULT_KEY
 })
@@ -133,7 +133,12 @@ handleQuery('accounts.all', async () => {
 })
 
 handleQuery('accounts.get', async ({ id }) => {
-  return await appAccounts.get(id)
+  const account = await appAccounts.get(id)
+  return {
+    ...account,
+    appAccountStreamUrl: `${jlinx.host.url}/${account.id}/stream`,
+    appUserIdStreamUrl: account.appUserId && `${jlinx.host.url}/${account.appUserId}/stream`,
+  }
 })
 
 handleCommand('accounts.login', async ({ id }) => {
@@ -148,10 +153,13 @@ handleCommand('accounts.login', async ({ id }) => {
 async function getAppUserOffering(appUserId){
   debug('getAppUserOffering', { appUserId })
   const appUser = await jlinx.get(appUserId)
+  await appUser.update()
+  debug('getAppUserOffering', { appUser })
   if (appUser.docType !== 'AppUser'){
+    debug('getAppUserOffering: appUser.docType !== "AppUser"', appUser.docType)
     throw new Error(`this does not look like an account offering`)
   }
-  await appUser.update()
+  // await appUser.update()
 
   debug('getAppUserOffering', {
     appUser,

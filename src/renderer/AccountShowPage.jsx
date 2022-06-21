@@ -2,6 +2,7 @@ import * as React from 'react'
 import Paper from '@mui/material/Paper'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
+import Paper from '@mui/material/Paper'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import ListItemText from '@mui/material/ListItemText'
@@ -29,30 +30,12 @@ export default function AccountShowPage(props){
 
   const query = useQuery('accounts.get', {id})
 
-  return <Box sx={{ flexGrow: 1 }}>
+  return <Box sx={{ flexGrow: 1, p: 2 }}>
     <PageHeader>App Account</PageHeader>
     {query.error && <ErrorAlert error={query.error}/>}
     {query.result && <Account account={query.result}/>}
   </Box>
 }
-
-
-function ReviewAccount({ id }){
-  const query = useQuery('accounts.review', { id })
-  return <Box {...{
-    sx: { m: 1 },
-  }}>
-    {
-      query.error
-        ? <Alert severity="error">{`${query.error}`}</Alert> :
-      query.resolved
-        ? <AccountForReview account={query.result}/> :
-      // else
-        <span>{`looking up: ${id}`}</span>
-    }
-  </Box>
-}
-
 
 function Account({ account }){
   const { id } = account
@@ -79,9 +62,10 @@ function Account({ account }){
     },
     [loginCommand.state]
   )
-  return <Box {...{
+  return <Paper {...{
+    elevation: 3,
     sx: {
-      m: 1,
+      p: 2
       // backgroundColor: 'background.paper',
     },
   }}>
@@ -92,10 +76,10 @@ function Account({ account }){
       created <Timestamp at={account.createdAt}/>
     </Typography>
     <Typography variant="body2">
-      app account id <Link href={`https://testnet1.jlinx.test/${account.id}`}>{account.id}</Link>
+      app account id <Link href={account.appAccountStreamUrl}>{account.id}</Link>
     </Typography>
     <Typography variant="body2">
-      app user id <Link href={`https://testnet1.jlinx.test/${account.appUserId}`}>{account.appUserId}</Link>
+      app user id <Link href={account.appUserIdStreamUrl}>{account.appUserId}</Link>
     </Typography>
     <p>
       <Button
@@ -109,6 +93,6 @@ function Account({ account }){
         onClick={onLogin}
       >Login</Button>
     </p>
-    <InspectObject object={{account, deleteCommand, loginCommand}}/>
-  </Box>
+    {/* <InspectObject object={{account, deleteCommand, loginCommand}}/> */}
+  </Paper>
 }
