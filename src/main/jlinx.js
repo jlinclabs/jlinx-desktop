@@ -19,15 +19,24 @@ const TMP_VAULT_KEY = Buffer.from(
   'hex'
 )
 
-const VAULT_NAME = process.env.VAULT_NAME || 'jlinx'
+process.env.JLINX_ENV = process.env.JLINX_ENV || 'development'
+
+const VAULT_NAME = process.env.JLINX_ENV === 'production' ? 'jlinx' : process.env.JLINX_ENV
+const JLINX_HOST = process.env.JLINX_ENV === 'production'
+  ? 'https://testnet1.jlinx.io'
+  : 'https://testnet1.jlinx.test'
+
 const VAULT_PATH = Path.join(app.getPath('userData'), `${VAULT_NAME}.vault`)
 
 const jlinx = new JlinxClient({
   // hostUrl: 'https://testnet1.jlinx.test', // development
-  hostUrl: 'https://testnet1.jlinx.io', // production
+  // hostUrl: 'https://testnet1.jlinx.io', // production
+  hostUrl: JLINX_HOST,
   vaultPath: VAULT_PATH,
   vaultKey: TMP_VAULT_KEY
 })
+
+jlinx.ready().then(() => { console.log(jlinx) })
 
 const appAccounts = jlinx.vault.recordStore('appAccounts')
 
