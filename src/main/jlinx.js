@@ -23,7 +23,8 @@ const VAULT_NAME = process.env.VAULT_NAME || 'jlinx'
 const VAULT_PATH = Path.join(app.getPath('userData'), `${VAULT_NAME}.vault`)
 
 const jlinx = new JlinxClient({
-  hostUrl: 'https://testnet1.jlinx.test',
+  // hostUrl: 'https://testnet1.jlinx.test',
+  hostUrl: 'https://testnet1.jlinx.io/', // production
   vaultPath: VAULT_PATH,
   vaultKey: TMP_VAULT_KEY
 })
@@ -101,7 +102,7 @@ handleQuery('documents.get', async (id) => {
     writable: doc.writable,
     contentType: doc.contentType,
     value: (doc.value && await doc.value()),
-    // entries: await doc.entries(),
+    entries: (doc.entries && await doc.entries()),
   }
 })
 

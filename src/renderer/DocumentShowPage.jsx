@@ -45,7 +45,7 @@ export default function DocumentShowPage(props){
     [changeQuery.state]
   )
   const url = `${HOST}/${id}`
-  return <Box sx={{ flexGrow: 1 }}>
+  return <Box sx={{ flexGrow: 1, p: 2 }}>
     <Typography
       variant="h4"
       sx={{ whiteSpace: 'no-wrap' }}
@@ -104,7 +104,7 @@ function Document({ doc, refresh }){
     [command.pending]
   )
 
-  return <Box sx={{p: 2}}>
+  return <Box sx={{}}>
     <InspectObject object={{
       length: doc.length,
       writable: doc.writable,
@@ -133,9 +133,9 @@ function Document({ doc, refresh }){
       <Button variant="contained" type="submit">Append</Button>
     </Box>
 
-    {doc.enrties
+    {doc.entries
       ? <ul>
-        {doc.enrties
+        {doc.entries
           .map((entry, index) =>
             <li key={index}>
               <span>{index}</span>&nbsp;

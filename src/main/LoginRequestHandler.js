@@ -26,7 +26,15 @@ module.exports = class LoginRequestHandler {
       debug('_watch', { appAccount })
       const appUser = await this.jlinx.get(appAccount.appUserId)
       await appUser.update()
+      if (typeof appUser.appAccountId === 'undefined'){
+        debug('_watch cannot watch appUser without appAccountId. appUser=', appUser)
+        return appUser.waitForUpdate().then(() => {
+          this._waitForNextUpdate(appAccountId)
+        })
+      }
       if (appUser.appAccountId !== appAccountId){
+        debug('_watch FAILED TO WATCH appAccount=', appAccount)
+
         throw new Error(
           `appAccountId missmatch ` +
           `${appUser.appAccountId} !== ${appAccountId}`
