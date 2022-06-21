@@ -4,6 +4,7 @@ import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
+import ListItemButton from '@mui/material/ListItemButton'
 import ListItemText from '@mui/material/ListItemText'
 import ListItemAvatar from '@mui/material/ListItemAvatar'
 import Skeleton from '@mui/material/Skeleton'
@@ -90,24 +91,29 @@ function AccountsListMember({ account, reload }){
       </IconButton>
     ),
   }}>
-    <ListItemAvatar>
-      <Avatar>
-        <ImageIcon />
-      </Avatar>
-    </ListItemAvatar>
-    <ListItemText {...{
-      primaryTypographyProps: {
-        sx: {
-          fontFamily: 'monospace',
-          whiteSpace: 'nowrap',
+    <ListItemButton {...{
+      role: undefined,
+      dense: true,
+      component: Link,
+      to: toPage('AccountShow', { id: account.id }),
+    }}>
+      <ListItemAvatar>
+        <Avatar>
+          <ImageIcon />
+        </Avatar>
+      </ListItemAvatar>
+      <ListItemText {...{
+        primaryTypographyProps: {
+          sx: {
+            fontFamily: 'monospace',
+            whiteSpace: 'nowrap',
+          },
         },
-        component: Link,
-        to: toPage('AccountShow', { id: account.id }),
-      },
-      primary: `${account.host}`,
-      secondary: <span>
-        created <Timestamp at={account.createdAt}/>
-      </span>
-    }}/>
+        primary: `${account.host}`,
+        secondary: <span>
+          created <Timestamp at={account.createdAt}/>
+        </span>
+      }}/>
+    </ListItemButton>
   </ListItem>
 }
