@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "b4a": "^1.5.3",
-    "jlinx-client": "github:jlinclabs/jlinx-client",
+    "jlinx-client": "github:jlinclabs/jlinx-client#6174c47c6843bd9efdc05c5bbe830ff597c4cf7d",
     "jlinx-identification": "github:jlinclabs/jlinx-identification",
     "jlinx-vault": "github:jlinclabs/jlinx-vault",
     "node-fetch": "^3.2.5"
