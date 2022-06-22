@@ -112,6 +112,7 @@ handleQuery('documents.get', async (id) => {
     contentType: doc.contentType,
     value: (doc.value && await doc.value()),
     entries: (doc.entries && await doc.entries()),
+    docUrl: `${jlinx.host.url}/${id}`,
   }
 })
 

@@ -22,9 +22,6 @@ import ErrorAlert from './ErrorAlert'
 import { useQuery, useCommand } from './ipc'
 import InspectObject from './InspectObject'
 
-const HOST = `https://testnet1.jlinx.test`
-
-
 export default function DocumentShowPage(props){
   const { id } = props.params
   const docQuery = useQuery('documents.get', id)
@@ -44,13 +41,14 @@ export default function DocumentShowPage(props){
     },
     [changeQuery.state]
   )
-  const url = `${HOST}/${id}`
+  // const url = `${HOST}/${id}`
+  const url = doc && doc.docUrl && `${doc.docUrl}/stream`
   return <Box sx={{ flexGrow: 1, p: 2 }}>
     <Typography
       variant="h4"
       sx={{ whiteSpace: 'no-wrap' }}
     >
-      <Link href={url}>{id}</Link>
+      {url ? <Link href={url}>{id}</Link> : id}
     </Typography>
     {docQuery.error && <ErrorAlert error={docQuery.error}/>}
     {changeQuery.error && <ErrorAlert error={changeQuery.error}/>}
@@ -139,7 +137,7 @@ function Document({ doc, refresh }){
           .map((entry, index) =>
             <li key={index}>
               <span>{index}</span>&nbsp;
-              <DocumentEntry {...{docType: doc.type, id: doc.id, entry, index}}/>
+              <DocumentEntry {...{doc, entry, index}}/>
             </li>
           )
           .reverse()
@@ -155,7 +153,7 @@ function Document({ doc, refresh }){
   </Box>
 }
 
-function DocumentEntry({ docType, entry, id, index }){
+function DocumentEntry({ doc, entry, index }){
   // this transform should be done and cached long before here
   // if (docType === 'raw')
   // const text = (new TextDecoder).decode(entry)
@@ -163,7 +161,7 @@ function DocumentEntry({ docType, entry, id, index }){
   if (typeof entry === 'string') text = `${entry}`
   else if (typeof entry === 'object') text = JSON.stringify(entry)
 
-  const url = `${HOST}/${id}/${index}`
+  const url = `${doc.docUrl}/${index}`
   return <Box {...{
     sx: {}
   }}>
